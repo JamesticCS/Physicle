@@ -128,12 +128,96 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
     // Create the answer grid
     function createAnswerGrid() {
         answersContainer.innerHTML = '';
         
         // Reset guesses
         guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
+        
+        // Check if mobile
+        const isMobile = isMobileDevice();
+        
+        // Create a single hidden input for mobile that will be repositioned
+        let mobileInput = null;
+        if (isMobile) {
+            mobileInput = document.createElement('input');
+            mobileInput.type = 'text';
+            mobileInput.className = 'mobile-master-input';
+            mobileInput.autocomplete = 'off';
+            mobileInput.autocapitalize = 'characters';
+            mobileInput.style.position = 'fixed';
+            mobileInput.style.opacity = '0';
+            mobileInput.style.height = '1px';
+            mobileInput.style.width = '1px';
+            mobileInput.style.top = '50%';
+            mobileInput.style.left = '50%';
+            mobileInput.style.zIndex = '-1';
+            document.body.appendChild(mobileInput);
+    
+            // Handle input
+            mobileInput.addEventListener('input', function(e) {
+                if (isGameComplete || currentGuess >= MAX_GUESSES) return;
+                
+                const val = e.target.value.toUpperCase();
+                if (val && val.match(/[A-Z]/)) {
+                    // Clear the input so we can capture next letter
+                    mobileInput.value = '';
+                    
+                    // If we're at a position with a letter, replace it
+                    if (currentPosition < WORD_LENGTH) {
+                        guesses[currentGuess][currentPosition] = val;
+                        
+                        // Update display
+                        const cell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${currentPosition}"]`);
+                        if (cell) cell.textContent = val;
+                        
+                        // Move to next position only if this position wasn't empty
+                        currentPosition++;
+                        highlightCurrentCell();
+                    }
+                }
+            });
+    
+
+            mobileInput.addEventListener('keydown', function(e) {
+                if (isGameComplete || currentGuess >= MAX_GUESSES) return;
+                
+                if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    
+                    // Delete the letter at the current position
+                    if (currentPosition < WORD_LENGTH && guesses[currentGuess][currentPosition]) {
+                        // Delete the letter at current position if there is one
+                        guesses[currentGuess][currentPosition] = '';
+                        const cell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${currentPosition}"]`);
+                        if (cell) cell.textContent = '';
+                    } else if (currentPosition > 0) {
+                        // If current position is empty, move back and delete the previous letter
+                        currentPosition--;
+                        guesses[currentGuess][currentPosition] = '';
+                        const cell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${currentPosition}"]`);
+                        if (cell) cell.textContent = '';
+                    }
+                    
+                    highlightCurrentCell();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    
+                    // Check if current row is complete
+                    if (currentPosition === WORD_LENGTH) {
+                        submitGuess();
+                    }
+                }
+            });
+            
+            // Hide on-screen keyboard
+            document.querySelector('.keyboard').style.display = 'none';
+        }
         
         // Create grid rows and cells
         for (let i = 0; i < MAX_GUESSES; i++) {
@@ -145,14 +229,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 cell.className = 'answer-box';
                 cell.dataset.row = i;
                 cell.dataset.col = j;
+                
+                if (isMobile) {
+                    // Make cell clickable to focus the input
+                    cell.addEventListener('click', function() {
+                        currentGuess = parseInt(this.dataset.row);
+                        // Key change: When a letter is clicked, ensure we move to that exact position
+                        currentPosition = parseInt(this.dataset.col);
+                        
+                        // Immediately focus the input
+                        highlightCurrentCell();
+                        mobileInput.focus();
+                    });
+                } else {
+                    // For desktop, use original logic
+                    cell.addEventListener('click', function() {
+                        selectBox(parseInt(this.dataset.row), parseInt(this.dataset.col));
+                    });
+                }
+                
                 row.appendChild(cell);
             }
             
             answersContainer.appendChild(row);
         }
         
-        // Highlight the first row's first cell
-        highlightCurrentCell();
+        // Initialize game state
+        if (isMobile) {
+            // Focus the mobile input to bring up keyboard
+            setTimeout(() => mobileInput.focus(), 100);
+        } else {
+            highlightCurrentCell();
+        }
     }
 
     // Highlight the current cell
@@ -454,6 +562,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Physical keyboard presses
     document.addEventListener('keydown', function(e) {
         if (gameBoard.style.display === 'none') return;
+
+        if (isMobileDevice()) return;
         
         if (e.key === 'Enter') {
             handleKeyInput('ENTER');
