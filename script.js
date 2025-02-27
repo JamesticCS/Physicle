@@ -1,10 +1,41 @@
+/*
+HOW TO ADD CUSTOM DAILY PUZZLES:
+
+1. Find the "dailyPuzzles" object below
+2. Add new puzzles using this format:
+
+"YYYY-MM-DD": {
+    word: "XXXXX",  // 5-letter word (will be the solution)
+    equations: [
+        { latex: 'your-latex-equation-1', letter: "X" },
+        { latex: 'your-latex-equation-2', letter: "X" },
+        { latex: 'your-latex-equation-3', letter: "X" },
+        { latex: 'your-latex-equation-4', letter: "X" },
+        { latex: 'your-latex-equation-5', letter: "X" }
+    ]
+}
+
+LaTeX Examples:
+- Fractions: \frac{a}{b}
+- Exponents: a^2
+- Subscripts: a_i
+- Greek letters: \alpha, \beta, \gamma, \Delta, \lambda
+- Integrals: \int_a^b f(x) \, dx
+- Square roots: \sqrt{x}
+- Vectors: \vec{F}
+- Partial derivatives: \frac{\partial f}{\partial x}
+- Nabla operator: \nabla
+- Infinity: \infty
+- For more LaTeX examples, visit: https://katex.org/docs/supported.html
+*/
+
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Game state variables
     let selectedBoxIndex = null;
     let startTime = null;
     let timerInterval = null;
-    let currentWord = "THINK"; // Default word
+    let currentWord = "QUARK"; // Default word
     let userAnswer = ["", "", "", "", ""];
     let isGameComplete = false;
     
@@ -24,21 +55,21 @@ document.addEventListener('DOMContentLoaded', function() {
         "2025-02-28": {
             word: "FORCE",
             equations: [
-                { latex: 'F = ma', letter: "F" },
-                { latex: 'E = mc^2', letter: "O" },
-                { latex: 'PV = nRT', letter: "R" },
-                { latex: 'c = \\lambda f', letter: "C" },
-                { latex: 'E = hf', letter: "E" }
+                { latex: 'ma', letter: "F" },
+                { latex: '\\omega r', letter: "O" },
+                { latex: '\\rho V g', letter: "R" },
+                { latex: '\\lambda f', letter: "C" },
+                { latex: 'mc^2', letter: "E" }
             ]
         },
         "2025-02-29": {
-            word: "QUARK",
+            word: "FIELD",
             equations: [
-                { latex: 'Q = \\int I \\, dt', letter: "Q" },
-                { latex: 'E = -\\frac{dU}{dx}', letter: "U" },
-                { latex: 'A = \\pi r^2', letter: "A" },
-                { latex: 'R = \\frac{V}{I}', letter: "R" },
-                { latex: 'KE = \\frac{1}{2}mv^2', letter: "K" }
+                { latex: '\\oint \\vec{E} \\cdot d\\vec{A}', letter: "F" },
+                { latex: '\\int_a^b f(x) dx', letter: "I" },
+                { latex: 'mc^2', letter: "E" },
+                { latex: '\\frac{dL}{dt}', letter: "L" },
+                { latex: '\\frac{d^2x}{dt^2}', letter: "D" }
             ]
         },
         // You can add more puzzles here following the same format
@@ -86,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 currentWord = dailyPuzzles[mostRecent].word.toUpperCase();
             } else {
-                // Fallback to THINK if no puzzles exist
-                currentWord = "THINK";
+                // Fallback to default if no puzzles exist
+                currentWord = "QUARK";
             }
         }
     }
@@ -187,16 +218,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handle keyboard input
+    // Handle keyboard input with improved backspace behavior
     function handleKeyInput(key) {
         if (isGameComplete) return;
         
         if (key === 'ENTER') {
             checkAnswer();
         } else if (key === 'BACKSPACE') {
+            // Modified backspace behavior
             if (selectedBoxIndex !== null) {
-                userAnswer[selectedBoxIndex] = '';
-                document.querySelectorAll('.answer-box')[selectedBoxIndex].textContent = '';
+                // If current box has content, clear it
+                if (userAnswer[selectedBoxIndex]) {
+                    userAnswer[selectedBoxIndex] = '';
+                    document.querySelectorAll('.answer-box')[selectedBoxIndex].textContent = '';
+                } 
+                // Otherwise, move to previous box (if exists) and clear it
+                else {
+                    const prevIndex = selectedBoxIndex - 1;
+                    if (prevIndex >= 0) {
+                        selectBox(prevIndex);
+                        userAnswer[prevIndex] = '';
+                        document.querySelectorAll('.answer-box')[prevIndex].textContent = '';
+                    }
+                }
+            } else {
+                // If no box is selected, find the rightmost filled box and clear it
+                for (let i = userAnswer.length - 1; i >= 0; i--) {
+                    if (userAnswer[i]) {
+                        selectBox(i);
+                        userAnswer[i] = '';
+                        document.querySelectorAll('.answer-box')[i].textContent = '';
+                        break;
+                    }
+                }
             }
         } else if (key.length === 1 && key.match(/[A-Z]/i)) {
             if (selectedBoxIndex !== null) {

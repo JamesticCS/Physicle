@@ -239,6 +239,11 @@ h1 {
     font-family: 'Space Mono', monospace;
 }
 
+.answer-box.completed:hover {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
 .answer-box:hover {
     border-color: var(--primary-color);
     background-color: var(--hover-color);
@@ -382,9 +387,9 @@ footer a:hover {
 
 /* Added styles for the success state and animations */
 .completed {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
+    background-color: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color) !important;
     transition: all 0.5s ease;
 }
 
