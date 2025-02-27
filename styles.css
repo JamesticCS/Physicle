@@ -500,3 +500,52 @@ footer a:hover {
     transform: translateX(3px);
     opacity: 1;
 }
+
+
+/* Minimal mobile fixes */
+@media (max-width: 600px) {
+    /* Make answer boxes smaller on mobile */
+    .answer-box {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
+        margin: 3px;
+    }
+    
+    /* Adjust equations for mobile */
+    .equation {
+        height: 75px;
+        padding: 10px;
+    }
+    
+    /* Ensure keyboard fits on small screens */
+    .key {
+        min-width: 28px;
+        height: 40px;
+        padding: 5px;
+        margin: 2px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 400px) {
+    /* Even smaller for very small screens */
+    .answer-box {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    /* Make keyboard more compact */
+    .key {
+        min-width: 24px;
+        padding: 2px;
+    }
+    
+    /* Adjust special keys */
+    .key[data-key="ENTER"], 
+    .key[data-key="BACKSPACE"] {
+        width: 50px;
+        font-size: 0.8rem;
+    }
+}
