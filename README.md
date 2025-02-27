@@ -2,7 +2,7 @@
 
 Physicle is a daily physics-themed word puzzle game inspired by Wordle. Players must decode physics equations to identify corresponding letters and spell out a 5-letter physics term.
 
-![Physicle Screenshot](https://user-images.githubusercontent.com/your-username/physicle/main/screenshot.png)
+![Physicle Screenshot](images/readMeScreenshot.png)
 
 ## How to Play
 
@@ -76,15 +76,6 @@ const dailyPuzzles = {
 - Infinity: `\infty`
 
 For more LaTeX examples, visit: [KaTeX Supported Functions](https://katex.org/docs/supported.html)
-
-## Deployment
-
-The easiest way to deploy Physicle is using GitHub Pages:
-
-1. Push your code to a GitHub repository
-2. Go to repository Settings > Pages
-3. Select the main branch as the source
-4. Your site will be published at https://your-username.github.io/physicle/
 
 ## Contributing
 

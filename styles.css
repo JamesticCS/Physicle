@@ -403,3 +403,15 @@ footer a:hover {
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
 }
+.github-link {
+    margin-top: 10px;
+}
+
+.github-link img {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.github-link img:hover {
+    opacity: 1;
+}
