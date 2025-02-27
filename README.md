@@ -48,15 +48,15 @@ You can add your own custom puzzles by editing the `dailyPuzzles` object in `scr
 ```javascript
 const dailyPuzzles = {
     // Format: "YYYY-MM-DD": { word: "XXXXX", equations: [{ latex: "...", letter: "X" }, ...] }
-    "2025-03-10": {
-        word: "LASER",
-        equations: [
-            { latex: '\\lambda f', letter: "L" },
-            { latex: '\\alpha = \\frac{d\\omega}{dt}', letter: "A" },
-            { latex: '\\sigma = \\frac{F}{A}', letter: "S" },
-            { latex: 'mc^2', letter: "E" },
-            { latex: '\\rho = \\frac{m}{V}', letter: "R" }
-        ]
+    "2025-02-27": {
+        word: "QUARK",
+        quations: [
+                { latex: 'mc \\Delta T', letter: "Q" },
+                { latex: 'mgh', letter: "U" },
+                { latex: '\\frac{dv}{dt}', letter: "A" },
+                { latex: '\\frac{V}{I}', letter: "R" },
+                { latex: '\\frac{1}{2}mv^2', letter: "K" }
+            ]
     },
     // Add more puzzles here
 };
