@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physicle</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/contrib/auto-render.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Physicle</h1>
+    <div class="subtitle">Where Physics Meets Wordle</div>
+
+    <div class="game-container">
+        <div class="game-guide card">
+            <h2>Challenge Your Physics Knowledge</h2>
+            <ul class="guide-steps">
+                <li>Each day presents you with a new 5-letter physics-related term</li>
+                <li>Interpret the five physics equations to identify corresponding letters</li>
+                <li>The equation in each box represents a physics concept or constant with an associated letter</li>
+                <li>Fill in all five boxes to spell out the target word</li>
+                <li>A new puzzle is released every 24 hours</li>
+            </ul>
+            <div class="equation-example">
+                <div class="equation-box">
+                    <span class="latex">mc^2</span>
+                </div>
+                <div class="letter-box">E</div>
+            </div>
+        </div>
+
+        <button id="start-button" class="start-button">Play</button>
+
+        <div id="game-board" class="game-board" style="display: none;">
+            <div class="timer" id="timer">0:00</div>
+
+            <div class="equations" id="equations">
+                <!-- Equations will be dynamically added here -->
+            </div>
+
+            <div class="answers" id="answers">
+                <!-- Answer boxes will be dynamically added here -->
+            </div>
+
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <div class="key" data-key="Q">Q</div>
+                    <div class="key" data-key="W">W</div>
+                    <div class="key" data-key="E">E</div>
+                    <div class="key" data-key="R">R</div>
+                    <div class="key" data-key="T">T</div>
+                    <div class="key" data-key="Y">Y</div>
+                    <div class="key" data-key="U">U</div>
+                    <div class="key" data-key="I">I</div>
+                    <div class="key" data-key="O">O</div>
+                    <div class="key" data-key="P">P</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" data-key="A">A</div>
+                    <div class="key" data-key="S">S</div>
+                    <div class="key" data-key="D">D</div>
+                    <div class="key" data-key="F">F</div>
+                    <div class="key" data-key="G">G</div>
+                    <div class="key" data-key="H">H</div>
+                    <div class="key" data-key="J">J</div>
+                    <div class="key" data-key="K">K</div>
+                    <div class="key" data-key="L">L</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" data-key="ENTER" style="width: 70px;">ENTER</div>
+                    <div class="key" data-key="Z">Z</div>
+                    <div class="key" data-key="X">X</div>
+                    <div class="key" data-key="C">C</div>
+                    <div class="key" data-key="V">V</div>
+                    <div class="key" data-key="B">B</div>
+                    <div class="key" data-key="N">N</div>
+                    <div class="key" data-key="M">M</div>
+                    <div class="key" data-key="BACKSPACE" style="width: 70px;">⌫</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="date-display" id="date-display"></div>
+        <div class="puzzle-number" id="puzzle-number"></div>
+    </div>
+
+    <footer>
+        Copyright © 2025 Jesse Hines. All rights reserved.
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

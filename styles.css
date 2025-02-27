@@ -1,0 +1,405 @@
+:root {
+    --primary-color: #3b82f6; /* Blue */
+    --primary-dark: #2563eb;
+    --accent-color: #10b981; /* Emerald */
+    --accent-dark: #059669;
+    --bg-color: #111827; /* Dark gray/blue */
+    --card-bg: #1f2937;
+    --text-color: #f3f4f6;
+    --light-text: #d1d5db;
+    --border-color: #374151;
+    --hover-color: #374151;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    --box-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --border-radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 4.5rem;
+    margin-bottom: 5px;
+    letter-spacing: -2px;
+    font-weight: 900;
+    background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+.subtitle {
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+.game-container {
+    max-width: 600px;
+    width: 100%;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--box-shadow-hover);
+}
+
+.game-guide {
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    margin-bottom: 30px;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.game-guide h2 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.6rem;
+    font-family: 'Space Mono', monospace;
+}
+
+.guide-steps {
+    list-style-type: none;
+}
+
+.guide-steps li {
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 30px;
+}
+
+.guide-steps li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    opacity: 0.7;
+}
+
+.equation .katex-display > .katex {
+    display: flex !important;
+    justify-content: center;
+    width: 100%;
+}
+
+.equation-box .katex-display > .katex {
+    display: flex !important;
+    justify-content: center;
+    width: 100%;
+}
+
+.equation-example {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.equation-box, .letter-box {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    min-height: 80px;
+    font-size: 1.4rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.letter-box {
+    font-weight: 700;
+    background-color: var(--primary-color);
+    color: white;
+    text-transform: uppercase;
+}
+
+.game-board {
+    border-radius: var(--border-radius);
+    padding: 25px;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.timer {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: var(--light-text);
+    font-family: 'Space Mono', monospace;
+}
+
+.equations {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.equation {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 5px;
+    width: calc(20% - 10px);
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.3rem;
+    background-color: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.equation .katex-display {
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.equation .katex {
+    font-size: 1.4rem; /* Default size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.equation:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.answers {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.answer-box {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin: 5px;
+    width: calc(20% - 10px);
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+}
+
+.answer-box:hover {
+    border-color: var(--primary-color);
+    background-color: var(--hover-color);
+}
+
+.active {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.key {
+    background-color: var(--hover-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 3px;
+    min-width: 40px;
+    height: 50px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+}
+
+.key:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.key:active {
+    transform: translateY(1px);
+}
+
+.start-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 30px auto;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    font-family: 'Outfit', sans-serif;
+}
+
+.start-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+}
+
+.start-button:active {
+    transform: translateY(1px);
+}
+
+.date-display {
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--light-text);
+}
+
+.puzzle-number {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    font-family: 'Space Mono', monospace;
+}
+
+footer {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--light-text);
+    padding: 20px;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+footer a:hover {
+    color: var(--accent-color);
+}
+
+@media (max-width: 600px) {
+    .equation, .answer-box {
+        width: calc(33.33% - 10px);
+    }
+    
+    h1 {
+        font-size: 3.2rem;
+    }
+
+    .game-guide, .game-board {
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    .equation, .answer-box {
+        width: calc(50% - 10px);
+    }
+    
+    .key {
+        min-width: 32px;
+        height: 45px;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .equation {
+        height: 90px;
+    }
+}
+
+/* Added styles for the success state and animations */
+.completed {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    transition: all 0.5s ease;
+}
+
+@keyframes success-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.success-animation {
+    animation: success-pulse 0.8s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
