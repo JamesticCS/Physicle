@@ -27,17 +27,38 @@
             <h2>Challenge Your Physics Knowledge</h2>
             <ul class="guide-steps">
                 <li>Each day presents you with a new 5-letter physics-related term</li>
-                <li>Interpret the five physics equations to identify corresponding letters</li>
-                <li>The equation in each box represents a physics concept or constant with an associated letter</li>
-                <li>Fill in all five boxes to spell out the target word</li>
-                <li>A new puzzle is released every 24 hours</li>
+                <li>You have 4 attempts to guess the correct word</li>
+                <li>After each guess, the color of the tiles will change:
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <div style="width: 20px; height: 20px; background-color: var(--accent-color); margin-right: 8px; border-radius: 3px;"></div>
+                            Green: Letter is correct and in the right position
+                        </li>
+                        <li style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <div style="width: 20px; height: 20px; background-color: #d97706; margin-right: 8px; border-radius: 3px;"></div>
+                            Yellow: Letter is in the word but in the wrong position
+                        </li>
+                        <li style="display: flex; align-items: center;">
+                            <div style="width: 20px; height: 20px; background-color: #4b5563; margin-right: 8px; border-radius: 3px;"></div>
+                            Gray: Letter is not in the word
+                        </li>
+                    </ul>
+                </li>
+                <li>The equations at the top represent physics concepts that will help you identify the solution</li>
             </ul>
-            <div class="equation-example">
-                <div class="equation-box">
-                    <span class="latex">mc^2</span>
-                </div>
-                <div class="letter-box">E</div>
-            </div>
+            <!-- Updated equation example with arrow -->
+    <div class="equation-example">
+        <div class="equation-box">
+            <span class="latex">mc^2</span>
+                        </div>
+    <div class="arrow-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+    </div>
+    <div class="letter-box">E</div>
+</div>
         </div>
 
         <button id="start-button" class="start-button">Play</button>
