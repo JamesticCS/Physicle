@@ -582,3 +582,168 @@ footer a:hover {
         margin-bottom: 10px;
     }
 }
+
+/* Fix for portrait mode equations layout */
+@media (max-width: 480px) and (orientation: portrait) {
+    /* Keep equations in horizontal layout but make them smaller */
+    .equations {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .equation {
+        width: 30%;  /* Show 3 per row */
+        height: 60px;
+        margin: 3px;
+        padding: 5px;
+    }
+
+    /* Make the text in equations smaller to fit better */
+    .equation .katex {
+        font-size: 1.1rem !important;
+    }
+}
+
+/* Even smaller screens (iPhone SE size) */
+@media (max-width: 375px) and (orientation: portrait) {
+    .equation {
+        width: 45%;  /* Show 2 per row */
+        margin: 2px;
+    }
+}
+
+/* Better fix for portrait mode layout */
+@media (max-width: 480px) and (orientation: portrait) {
+    /* Force equations to stay in a single row */
+    .equations {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        overflow-x: auto; /* Allow horizontal scrolling if needed */
+        width: 100%;
+        padding-bottom: 10px; /* Space for scrollbar */
+    }
+
+    .equation {
+        min-width: 65px;
+        width: 18%;
+        height: 65px;
+        margin: 0 2px;
+        padding: 5px;
+        flex-shrink: 0;
+    }
+
+    /* Make keyboard bigger */
+    .keyboard {
+        margin-top: 15px;
+    }
+
+    .key {
+        min-width: 32px;
+        height: 45px;
+        font-size: 1.1rem;
+        margin: 3px;
+    }
+
+    /* Special keys */
+    .key[data-key="ENTER"], 
+    .key[data-key="BACKSPACE"] {
+        min-width: 60px;
+        font-size: 0.9rem;
+    }
+
+    /* Make answer boxes a bit smaller to fit better */
+    .guess-row {
+        gap: 4px;
+    }
+
+    .answer-box {
+        width: 45px;
+        height: 45px;
+        margin: 3px;
+    }
+}
+
+/* Improved fix for portrait mode layout */
+@media (max-width: 480px) and (orientation: portrait) {
+    /* Better equation sizing and alignment */
+    .equations {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .equation {
+        width: 19%;
+        min-width: 60px;
+        height: 60px;
+        margin: 0 1px;
+        padding: 5px;
+        flex-shrink: 0;
+    }
+
+    /* Scale down equation text */
+    .equation .katex {
+        font-size: 1rem !important;
+        transform: scale(0.85);
+        transform-origin: center center;
+    }
+
+    /* Make answer boxes larger */
+    .answer-box {
+        width: 60px !important;
+        height: 60px !important;
+        margin: 2px !important;
+        font-size: 1.8rem !important;
+    }
+
+    /* Fix keyboard alignment */
+    .keyboard {
+        width: 100%;
+        margin: 10px auto 0;
+        padding: 0;
+    }
+
+    .keyboard-row {
+        margin-bottom: 5px;
+        justify-content: center;
+        padding: 0 5px;
+    }
+
+    .key {
+        min-width: 28px;
+        height: 42px;
+        margin: 2px;
+        padding: 0;
+        font-size: 1rem;
+    }
+
+    /* Game board spacing */
+    .game-board {
+        padding: 15px 10px;
+    }
+
+    /* Keep answer rows centered */
+    .guess-row {
+        justify-content: center;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 360px) and (orientation: portrait) {
+    .key {
+        min-width: 24px;
+        height: 38px;
+        margin: 1px;
+        font-size: 0.9rem;
+    }
+
+    .key[data-key="ENTER"], 
+    .key[data-key="BACKSPACE"] {
+        width: 50px !important;
+        font-size: 0.8rem;
+    }
+}
