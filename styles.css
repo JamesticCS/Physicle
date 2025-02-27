@@ -747,3 +747,23 @@ footer a:hover {
         font-size: 0.8rem;
     }
 }
+
+/* Mobile inputs styling */
+.mobile-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    caret-color: transparent;
+}
+
+/* Hide virtual keyboard on mobile */
+@media (max-width: 767px) {
+    .keyboard {
+        display: none;
+    }
+}
+
+/* Make answer boxes clickable on mobile */
+.answer-box {
+    position: relative;
+}
