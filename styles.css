@@ -217,9 +217,14 @@ h1 {
 
 .answers {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 5px;
     margin-bottom: 30px;
+}
+.guess-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
 }
 
 .answer-box {
@@ -247,6 +252,33 @@ h1 {
 .answer-box:hover {
     border-color: var(--primary-color);
     background-color: var(--hover-color);
+}
+
+.answer-box.correct {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color) !important;
+    transition: all 0.5s ease;
+}
+
+.answer-box.present {
+    background-color: #d97706 !important; /* Amber-600 */
+    color: white !important;
+    border-color: #d97706 !important;
+    transition: all 0.5s ease;
+}
+
+.answer-box.absent {
+    background-color: #4b5563 !important; /* Gray-600 */
+    color: white !important;
+    border-color: #4b5563 !important;
+    transition: all 0.5s ease;
+}
+
+.answer-box.correct:hover,
+.answer-box.present:hover,
+.answer-box.absent:hover {
+    transform: none;
 }
 
 .active {
@@ -418,5 +450,53 @@ footer a:hover {
 }
 
 .github-link img:hover {
+    opacity: 1;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.answer-box.pop {
+    animation: pop 0.3s ease;
+}
+
+
+@media (max-width: 500px) {
+    .answer-box {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 350px) {
+    .answer-box {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Arrow styling for equation example */
+.arrow-container {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+    color: var(--primary-color);
+}
+
+.arrow-icon {
+    width: 28px;
+    height: 28px;
+    stroke: var(--primary-color);
+    opacity: 0.9;
+    transition: all 0.2s ease;
+}
+
+.equation-example:hover .arrow-icon {
+    transform: translateX(3px);
     opacity: 1;
 }

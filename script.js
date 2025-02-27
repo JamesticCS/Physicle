@@ -31,12 +31,17 @@ LaTeX Examples:
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Game constants
+    const MAX_GUESSES = 4;
+    const WORD_LENGTH = 5;
+    
     // Game state variables
-    let selectedBoxIndex = null;
+    let currentGuess = 0;
+    let currentPosition = 0;
     let startTime = null;
     let timerInterval = null;
     let currentWord = "QUARK"; // Default word
-    let userAnswer = ["", "", "", "", ""];
+    let guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
     let isGameComplete = false;
     
     // Custom puzzles database - you can add new puzzles here
@@ -123,19 +128,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Create the answer boxes
-    function createAnswerBoxes() {
+    // Create the answer grid
+    function createAnswerGrid() {
         answersContainer.innerHTML = '';
-        userAnswer = ["", "", "", "", ""];
         
-        for (let i = 0; i < 5; i++) {
-            const box = document.createElement('div');
-            box.className = 'answer-box';
-            box.dataset.index = i;
-            box.addEventListener('click', function() {
-                selectBox(i);
-            });
-            answersContainer.appendChild(box);
+        // Reset guesses
+        guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
+        
+        // Create grid rows and cells
+        for (let i = 0; i < MAX_GUESSES; i++) {
+            const row = document.createElement('div');
+            row.className = 'guess-row';
+            
+            for (let j = 0; j < WORD_LENGTH; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'answer-box';
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                row.appendChild(cell);
+            }
+            
+            answersContainer.appendChild(row);
+        }
+        
+        // Highlight the first row's first cell
+        highlightCurrentCell();
+    }
+
+    // Highlight the current cell
+    function highlightCurrentCell() {
+        // Remove highlights from all cells
+        document.querySelectorAll('.answer-box').forEach(box => {
+            box.classList.remove('active');
+        });
+        
+        // Add highlight to current cell if game is not complete
+        if (!isGameComplete && currentGuess < MAX_GUESSES) {
+            const currentCell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${currentPosition}"]`);
+            if (currentCell) {
+                currentCell.classList.add('active');
+            }
         }
     }
 
@@ -201,172 +233,176 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Select an answer box
-    function selectBox(index) {
-        if (isGameComplete) return;
-        
-        // Remove active class from all boxes
-        const boxes = document.querySelectorAll('.answer-box');
-        boxes.forEach(box => box.classList.remove('active'));
-        
-        // Add active class to selected box
-        if (selectedBoxIndex !== index) {
-            boxes[index].classList.add('active');
-            selectedBoxIndex = index;
-        } else {
-            selectedBoxIndex = null;
-        }
-    }
-
-    // Handle keyboard input with improved backspace behavior
+    // Handle keyboard input
     function handleKeyInput(key) {
-        if (isGameComplete) return;
+        if (isGameComplete || currentGuess >= MAX_GUESSES) return;
         
         if (key === 'ENTER') {
-            checkAnswer();
+            if (currentPosition === WORD_LENGTH) {
+                submitGuess();
+            }
         } else if (key === 'BACKSPACE') {
-            // Modified backspace behavior
-            if (selectedBoxIndex !== null) {
-                // If current box has content, clear it
-                if (userAnswer[selectedBoxIndex]) {
-                    userAnswer[selectedBoxIndex] = '';
-                    document.querySelectorAll('.answer-box')[selectedBoxIndex].textContent = '';
-                } 
-                // Otherwise, move to previous box (if exists) and clear it
-                else {
-                    const prevIndex = selectedBoxIndex - 1;
-                    if (prevIndex >= 0) {
-                        selectBox(prevIndex);
-                        userAnswer[prevIndex] = '';
-                        document.querySelectorAll('.answer-box')[prevIndex].textContent = '';
-                    }
-                }
-            } else {
-                // If no box is selected, find the rightmost filled box and clear it
-                for (let i = userAnswer.length - 1; i >= 0; i--) {
-                    if (userAnswer[i]) {
-                        selectBox(i);
-                        userAnswer[i] = '';
-                        document.querySelectorAll('.answer-box')[i].textContent = '';
-                        break;
-                    }
-                }
+            if (currentPosition > 0) {
+                currentPosition--;
+                guesses[currentGuess][currentPosition] = '';
+                updateGuessDisplay();
             }
-        } else if (key.length === 1 && key.match(/[A-Z]/i)) {
-            if (selectedBoxIndex !== null) {
-                userAnswer[selectedBoxIndex] = key.toUpperCase();
-                document.querySelectorAll('.answer-box')[selectedBoxIndex].textContent = key.toUpperCase();
-                
-                // Auto-move to next empty box
-                const nextIndex = getNextEmptyBox(selectedBoxIndex);
-                if (nextIndex !== -1) {
-                    selectBox(nextIndex);
-                }
-            }
-        }
-    }
-
-    // Get next empty box
-    function getNextEmptyBox(currentIndex) {
-        for (let i = currentIndex + 1; i < 5; i++) {
-            if (!userAnswer[i]) {
-                return i;
-            }
-        }
-        for (let i = 0; i < currentIndex; i++) {
-            if (!userAnswer[i]) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    // Check if the answer is correct
-    function checkAnswer() {
-        // Make sure all boxes are filled
-        if (userAnswer.some(letter => !letter)) {
-            // Flash empty boxes in red
-            const firstEmptyIndex = userAnswer.findIndex(letter => !letter);
-            const boxes = document.querySelectorAll('.answer-box');
-            
-            userAnswer.forEach((letter, index) => {
-                if (!letter) {
-                    const box = boxes[index];
-                    box.style.borderColor = '#ef4444';
-                    setTimeout(() => {
-                        box.style.borderColor = '';
-                    }, 800);
-                }
-            });
-            
-            // Focus the first empty box
-            if (firstEmptyIndex !== -1) {
-                selectBox(firstEmptyIndex);
-            }
-            
-            return;
+        } else if (key.length === 1 && key.match(/[A-Z]/i) && currentPosition < WORD_LENGTH) {
+            guesses[currentGuess][currentPosition] = key.toUpperCase();
+            updateGuessDisplay();
+            currentPosition++;
         }
         
-        const userWordJoined = userAnswer.join('');
-        if (userWordJoined.toUpperCase() === currentWord.toUpperCase()) {
-            // Correct answer!
+        highlightCurrentCell();
+    }
+
+    // Update the display of the current guess
+    function updateGuessDisplay() {
+        for (let j = 0; j < WORD_LENGTH; j++) {
+            const cell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${j}"]`);
+            if (cell) {
+                cell.textContent = guesses[currentGuess][j];
+            }
+        }
+    }
+
+    // Submit the current guess and check against the answer
+    function submitGuess() {
+        const guess = guesses[currentGuess].join('');
+        
+        // Check if guess is complete
+        if (guess.length !== WORD_LENGTH) return;
+        
+        // Apply colors based on correctness
+        applyColors();
+        
+        // Check if guess is correct
+        if (guess === currentWord) {
+            // Win condition
             isGameComplete = true;
             stopTimer();
-            
-            // Apply success animation
-            const boxes = document.querySelectorAll('.answer-box');
-            boxes.forEach((box, index) => {
-                // Stagger the animation
-                setTimeout(() => {
-                    box.classList.add('completed');
-                    box.classList.add('success-animation');
-                }, index * 100);
-            });
-            
-            setTimeout(() => {
-                // Create a success message
-                const successMessage = document.createElement('div');
-                successMessage.style.position = 'fixed';
-                successMessage.style.top = '20%';
-                successMessage.style.left = '50%';
-                successMessage.style.transform = 'translateX(-50%)';
-                successMessage.style.backgroundColor = 'var(--card-bg)';
-                successMessage.style.padding = '20px 30px';
-                successMessage.style.borderRadius = '12px';
-                successMessage.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-                successMessage.style.zIndex = '1000';
-                successMessage.style.textAlign = 'center';
-                successMessage.innerHTML = `
-                    <h3 style="color: var(--accent-color); margin-bottom: 10px; font-size: 1.5rem;">Congratulations!</h3>
-                    <p style="color: var(--text-color);">You solved today's Physicle in ${timerElement.textContent}!</p>
-                    <button style="
-                        margin-top: 15px;
-                        background-color: var(--accent-color);
-                        color: white;
-                        border: none;
-                        padding: 8px 16px;
-                        border-radius: 8px;
-                        cursor: pointer;
-                    ">Close</button>
-                `;
-                document.body.appendChild(successMessage);
-                
-                // Add click event to close button
-                const closeButton = successMessage.querySelector('button');
-                closeButton.addEventListener('click', () => {
-                    document.body.removeChild(successMessage);
-                });
-            }, 800);
+            showSuccessMessage();
+        } else if (currentGuess >= MAX_GUESSES - 1) {
+            // Lose condition (used all guesses)
+            isGameComplete = true;
+            stopTimer();
+            showFailureMessage();
         } else {
-            // Wrong answer - shake the boxes
-            const boxes = document.querySelectorAll('.answer-box');
-            boxes.forEach(box => {
-                box.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    box.style.animation = '';
-                }, 500);
-            });
+            // Move to next guess
+            currentGuess++;
+            currentPosition = 0;
+            highlightCurrentCell();
         }
+    }
+
+    // Apply colors to the current guess based on letter correctness
+    function applyColors() {
+        const guess = guesses[currentGuess];
+        const target = currentWord.split('');
+        const rowCells = document.querySelectorAll(`.answer-box[data-row="${currentGuess}"]`);
+        
+        // Create a map to track which letters in the target are already matched
+        // This helps with handling duplicate letters correctly
+        const targetLetterCount = {};
+        target.forEach(letter => {
+            targetLetterCount[letter] = (targetLetterCount[letter] || 0) + 1;
+        });
+        
+        // First pass: mark correct positions (green)
+        for (let i = 0; i < WORD_LENGTH; i++) {
+            if (guess[i] === target[i]) {
+                rowCells[i].classList.add('correct');
+                targetLetterCount[guess[i]]--;
+            }
+        }
+        
+        // Second pass: mark letters in wrong positions (yellow) or not in word (gray)
+        for (let i = 0; i < WORD_LENGTH; i++) {
+            if (guess[i] !== target[i]) {
+                if (targetLetterCount[guess[i]] > 0) {
+                    rowCells[i].classList.add('present');
+                    targetLetterCount[guess[i]]--;
+                } else {
+                    rowCells[i].classList.add('absent');
+                }
+            }
+        }
+    }
+
+    // Show success message
+    function showSuccessMessage() {
+        setTimeout(() => {
+            const successMessage = document.createElement('div');
+            successMessage.style.position = 'fixed';
+            successMessage.style.top = '20%';
+            successMessage.style.left = '50%';
+            successMessage.style.transform = 'translateX(-50%)';
+            successMessage.style.backgroundColor = 'var(--card-bg)';
+            successMessage.style.padding = '20px 30px';
+            successMessage.style.borderRadius = '12px';
+            successMessage.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+            successMessage.style.zIndex = '1000';
+            successMessage.style.textAlign = 'center';
+            successMessage.innerHTML = `
+                <h3 style="color: var(--accent-color); margin-bottom: 10px; font-size: 1.5rem;">Congratulations!</h3>
+                <p style="color: var(--text-color);">You solved today's Physicle in ${currentGuess + 1}/${MAX_GUESSES} guesses!</p>
+                <p style="color: var(--text-color);">Time: ${timerElement.textContent}</p>
+                <button style="
+                    margin-top: 15px;
+                    background-color: var(--accent-color);
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                ">Close</button>
+            `;
+            document.body.appendChild(successMessage);
+            
+            // Add click event to close button
+            const closeButton = successMessage.querySelector('button');
+            closeButton.addEventListener('click', () => {
+                document.body.removeChild(successMessage);
+            });
+        }, 800);
+    }
+
+    // Show failure message
+    function showFailureMessage() {
+        setTimeout(() => {
+            const failureMessage = document.createElement('div');
+            failureMessage.style.position = 'fixed';
+            failureMessage.style.top = '20%';
+            failureMessage.style.left = '50%';
+            failureMessage.style.transform = 'translateX(-50%)';
+            failureMessage.style.backgroundColor = 'var(--card-bg)';
+            failureMessage.style.padding = '20px 30px';
+            failureMessage.style.borderRadius = '12px';
+            failureMessage.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+            failureMessage.style.zIndex = '1000';
+            failureMessage.style.textAlign = 'center';
+            failureMessage.innerHTML = `
+                <h3 style="color: #ef4444; margin-bottom: 10px; font-size: 1.5rem;">Game Over</h3>
+                <p style="color: var(--text-color);">The word was: ${currentWord}</p>
+                <p style="color: var(--text-color);">Better luck next time!</p>
+                <button style="
+                    margin-top: 15px;
+                    background-color: var(--primary-color);
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                ">Close</button>
+            `;
+            document.body.appendChild(failureMessage);
+            
+            // Add click event to close button
+            const closeButton = failureMessage.querySelector('button');
+            closeButton.addEventListener('click', () => {
+                document.body.removeChild(failureMessage);
+            });
+        }, 800);
     }
 
     // Start timer
@@ -394,13 +430,15 @@ document.addEventListener('DOMContentLoaded', function() {
         startButton.style.display = 'none';
         gameBoard.style.display = 'block';
         
+        // Reset game state
+        currentGuess = 0;
+        currentPosition = 0;
+        isGameComplete = false;
+        
         // Initialize game
-        createAnswerBoxes();
+        createAnswerGrid();
         createEquations();
         startTimer();
-        
-        // Select the first box
-        selectBox(0);
     }
 
     // Add event listeners
@@ -424,10 +462,16 @@ document.addEventListener('DOMContentLoaded', function() {
             handleKeyInput('BACKSPACE');
         } else if (e.key.match(/^[a-zA-Z]$/)) {
             handleKeyInput(e.key.toUpperCase());
-        } else if (e.key === 'ArrowRight' && selectedBoxIndex !== null) {
-            selectBox((selectedBoxIndex + 1) % 5);
-        } else if (e.key === 'ArrowLeft' && selectedBoxIndex !== null) {
-            selectBox((selectedBoxIndex - 1 + 5) % 5);
+        } else if (e.key === 'ArrowRight') {
+            if (currentPosition < WORD_LENGTH) {
+                currentPosition++;
+                highlightCurrentCell();
+            }
+        } else if (e.key === 'ArrowLeft') {
+            if (currentPosition > 0) {
+                currentPosition--;
+                highlightCurrentCell();
+            }
         }
     });
 
