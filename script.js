@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Custom puzzles database - you can add new puzzles here
     const dailyPuzzles = {
         // Format: "YYYY-MM-DD": { word: "XXXXX", equations: [{ latex: "...", letter: "X" }, ...] }
-        "2025-02-27": {
+        "2025-02-28": {
             word: "QUARK",
             equations: [
                 { latex: 'mc \\Delta T', letter: "Q" },
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 { latex: '\\frac{1}{2}mv^2', letter: "K" }
             ]
         },
-        "2025-02-28": {
+        "2025-02-29": {
             word: "FORCE",
             equations: [
                 { latex: 'ma', letter: "F" },
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 { latex: 'mc^2', letter: "E" }
             ]
         },
-        "2025-02-29": {
+        "2025-02-30": {
             word: "FIELD",
             equations: [
                 { latex: '\\oint \\vec{E} \\cdot d\\vec{A}', letter: "F" },
