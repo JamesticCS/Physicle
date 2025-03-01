@@ -767,3 +767,297 @@ footer a:hover {
 .answer-box {
     position: relative;
 }
+
+
+.explanation-section {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow);
+    border: 2px solid var(--primary-color);
+    opacity: 0;
+    animation: fade-in 0.8s forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.explanation-title {
+    color: var(--primary-color);
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+}
+
+.explanation-subtitle {
+    text-align: center;
+    color: var(--light-text);
+    margin-bottom: 25px;
+    font-weight: 300;
+}
+
+.explanation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.explanation-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.explanation-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.explanation-letter {
+    background-color: var(--primary-color);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+}
+
+.explanation-equation {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-grow: 1;
+}
+
+.explanation-equation .latex {
+    color: var(--text-color);
+    font-size: 1.3rem;
+    margin-right: 20px;
+    min-width: 100px;
+}
+
+.explanation-text {
+    color: var(--light-text);
+    font-weight: 300;
+    flex-grow: 1;
+    margin-left: auto;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .explanation-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+    }
+    
+    .explanation-letter {
+        margin-bottom: 10px;
+    }
+    
+    .explanation-equation {
+        width: 100%;
+        margin-left: 0;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .explanation-equation .latex {
+        margin-bottom: 8px;
+        margin-right: 0;
+    }
+    
+    .explanation-text {
+        margin-top: 8px;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .explanation-section {
+        padding: 15px;
+    }
+    
+    .explanation-title {
+        font-size: 1.3rem;
+    }
+}
+
+
+.equation {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.equation:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.equation::after {
+    content: "🔍";
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.equation:hover::after {
+    opacity: 0.7;
+}
+
+/* Modal styling */
+.equation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.equation-modal-content {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); }
+    to { transform: scale(1); }
+}
+
+.equation-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: var(--light-text);
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.equation-modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.expanded-equation {
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.expanded-equation .katex {
+    font-size: 2rem !important;
+    margin-bottom: 20px;
+}
+
+.expanded-equation-explanation {
+    color: var(--light-text);
+    font-size: 1.1rem;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    text-align: center;
+}
+
+/* Mobile optimization */
+@media (max-width: 480px) {
+    .equation-modal-content {
+        padding: 20px 15px;
+    }
+    
+    .expanded-equation .katex {
+        font-size: 1.5rem !important;
+    }
+    
+    .expanded-equation-explanation {
+        font-size: 1rem;
+    }
+}
+
+/* Make explanation equations clickable too */
+.explanation-equation {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.explanation-equation:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+
+.mobile-pulse {
+    animation: pulse-animation 2s infinite;
+    position: relative;
+}
+
+
+.mobile-pulse::after {
+    content: "Tap to start";
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    background-color: var(--card-bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+@keyframes pulse-animation {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}

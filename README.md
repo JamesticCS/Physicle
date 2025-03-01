@@ -47,18 +47,42 @@ You can add your own custom puzzles by editing the `dailyPuzzles` object in `scr
 
 ```javascript
 const dailyPuzzles = {
-    // Format: "YYYY-MM-DD": { word: "XXXXX", equations: [{ latex: "...", letter: "X" }, ...] }
-    "2025-02-27": {
-        word: "QUARK",
-        quations: [
-                { latex: 'mc \\Delta T', letter: "Q" },
-                { latex: 'mgh', letter: "U" },
-                { latex: '\\frac{dv}{dt}', letter: "A" },
-                { latex: '\\frac{V}{I}', letter: "R" },
-                { latex: '\\frac{1}{2}mv^2', letter: "K" }
-            ]
-    },
-    // Add more puzzles here
+     Format: "YYYY-MM-DD": { word: "XXXXX", equations: [{ latex: "...", letter: "X", fullEquation: "...", explanation: "..." }, ...] }
+    "2025-03-01": {
+			word: "BRAVE",
+			equations: [{
+					latex: '\\frac{\\mu_0 I}{4\\pi} \\oint \\frac{d\\vec{l} \\times \\vec{r}}{r^2}',
+					letter: "B",
+					fullEquation: '\\vec{B} = \\frac{\\mu_0 I}{4\\pi} \\oint \\frac{d\\vec{l} \\times \\vec{r}}{r^2}',
+					explanation: "Biot-Savart Law for magnetic field"
+				},
+				{
+					latex: '\\frac{PV}{nT}',
+					letter: "R",
+					fullEquation: 'R = \\frac{PV}{nT}',
+					explanation: "Ideal gas constant from PV = nRT"
+				},
+				{
+					latex: '\\frac{\\Delta v}{\\Delta t}',
+					letter: "A",
+					fullEquation: 'a = \\frac{\\Delta v}{\\Delta t}',
+					explanation: "Average acceleration"
+				},
+				{
+					latex: '-\\int_{\\mathbf{r}_1}^{\\mathbf{r}_2} \\mathbf{E} \\cdot d\\mathbf{r}',
+					letter: "V",
+					fullEquation: '\\Delta V = -\\int_{\\mathbf{r}_1}^{\\mathbf{r}_2} \\mathbf{E} \\cdot d\\mathbf{r}',
+					explanation: "Electric potential difference"
+				},
+				{
+					latex: 'hf',
+					letter: "E",
+					fullEquation: 'E = hf',
+					explanation: "Photon energy (Planck's equation)"
+				}
+			]
+		}
+		// Add or update other puzzles as needed
 };
 ```
 
