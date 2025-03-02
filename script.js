@@ -23,7 +23,7 @@ However, you can still add custom puzzles for specific dates:
 document.addEventListener('DOMContentLoaded', function() {
 
     // Game constants
-	const MAX_GUESSES = 4;
+	const MAX_GUESSES = 5;
 	const WORD_LENGTH = 5;
     const PUZZLE_VERSION = 11; // Used to regenerate puzzles
 
