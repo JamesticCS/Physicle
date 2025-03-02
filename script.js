@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	let isGameComplete = false;
 	let todaysPuzzle = null;
     let validGuesses = [];
+    let unlimitedMode = false;
+    let dailyCompleted = false; 
+
 
 
 	const startButton = document.getElementById('start-button');
@@ -48,7 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	const answersContainer = document.getElementById('answers');
 	const dateDisplay = document.getElementById('date-display');
 	const puzzleNumber = document.getElementById('puzzle-number');
-	const timerElement = document.getElementById('timer');
+	const timerElement = document.getElementById('timer');  
+    const unlimitedButton = document.getElementById('unlimited-button');
+    // Initially hide the unlimited button
+    unlimitedButton.style.display = 'none';
 
     const physicsEquations = window.physicsEquations
 
@@ -248,6 +254,21 @@ function selectEquationForLetter(letter, date, version = PUZZLE_VERSION) {
             equations
         };
     }
+
+    async function generateUnlimitedPuzzle() {
+        const wordList = await loadWordleAnswers(); // reuse your function
+        const randomIndex = Math.floor(Math.random() * wordList.length);
+        const word = wordList[randomIndex].toUpperCase();
+        const equations = [];
+        // For a random effect, generate a random version for each letter.
+        for (let i = 0; i < word.length; i++) {
+          const randomVersion = Math.floor(Math.random() * 1000);
+          const eq = selectEquationForLetter(word[i], new Date(), randomVersion);
+          equations.push(eq);
+        }
+        return { word, equations };
+      }
+      
     
 
 	// Display current date and load the corresponding puzzle
@@ -269,6 +290,12 @@ function selectEquationForLetter(letter, date, version = PUZZLE_VERSION) {
 
 		// Try to load puzzle for today's date
 		await loadPuzzleForDate(dateString);
+
+        dailyCompleted = checkDailyCompletion();
+
+        if (dailyCompleted) {
+            unlimitedButton.style.display = 'block';
+        }
 	}
 
 	// Load puzzle for a specific date - first check custom puzzles, then generate one
@@ -356,6 +383,7 @@ function saveGameState() {
         isGameComplete: isGameComplete,
         startTime: startTime ? elapsedMs : null,
         elapsedTime: elapsedTime,
+        dailyCompleted: dailyCompleted,
         puzzleData: todaysPuzzle
     };
     
@@ -397,6 +425,11 @@ function loadGameState() {
         currentPosition = gameState.currentPosition || 0;
         isGameComplete = gameState.isGameComplete;
         todaysPuzzle = gameState.puzzleData;
+        
+        // Load dailyCompleted status if available
+        if (gameState.dailyCompleted !== undefined) {
+            dailyCompleted = gameState.dailyCompleted;
+        }
         
         // If the game was in progress, restore the timer
         if (gameState.startTime && !isGameComplete) {
@@ -464,6 +497,29 @@ function restoreGameUI() {
         }, 500);
     } else {
         highlightCurrentCell();
+    }
+}
+
+// Check if the daily puzzle has been completed today
+function checkDailyCompletion() {
+    try {
+        const savedState = localStorage.getItem('physicle_state');
+        if (!savedState) return false;
+        
+        const gameState = JSON.parse(savedState);
+        
+        // Get today's date string
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`;
+        
+        // Check if the saved state is from today and the game is complete
+        return gameState.date === todayString && gameState.isGameComplete === true;
+    } catch (error) {
+        console.error('Error checking daily completion:', error);
+        return false;
     }
 }
 
@@ -846,7 +902,7 @@ function handleKeyInput(key) {
 		}
 	}
 
-	function showEquationExplanations() {
+	function showEquationExplanations(isUnlimited = false) {
         // Remove existing explanation section if it exists
         const existingExplanation = document.getElementById('explanation-section');
         if (existingExplanation) {
@@ -856,15 +912,17 @@ function handleKeyInput(key) {
         const puzzleData = todaysPuzzle;
         if (!puzzleData) return;
     
-        // Create the explanation section container...
+        // Create the explanation section container
         const explanationSection = document.createElement('div');
         explanationSection.id = 'explanation-section';
         explanationSection.className = 'explanation-section';
     
-        // Title, subtitle, etc. ...
+        // Title, subtitle, etc.
         const explanationTitle = document.createElement('h3');
         explanationTitle.className = 'explanation-title';
-        explanationTitle.textContent = `Today's Solution: ${puzzleData.word}`;
+        explanationTitle.textContent = isUnlimited ? 
+            `Solution: ${puzzleData.word}` : 
+            `Today's Solution: ${puzzleData.word}`;
         explanationSection.appendChild(explanationTitle);
     
         const explanationSubtitle = document.createElement('p');
@@ -875,15 +933,13 @@ function handleKeyInput(key) {
         const explanationList = document.createElement('div');
         explanationList.className = 'explanation-list';
     
-        // === NEW: Find the final guess row ===
-        // If the game ended, the final guess row is currentGuess - 1
-        // (whether you won or used all guesses).
+        // Find the final guess row
         const finalGuessIndex = currentGuess - 1;
         const finalGuessCells = document.querySelectorAll(`.answer-box[data-row="${finalGuessIndex}"]`);
     
         // Loop over each letter/equation
         puzzleData.equations.forEach((eq, index) => {
-            // Create a container for each letter’s explanation
+            // Create a container for each letter's explanation
             const explanationItem = document.createElement('div');
             explanationItem.className = 'explanation-item';
     
@@ -892,8 +948,7 @@ function handleKeyInput(key) {
             letterBadge.className = 'explanation-letter';
             letterBadge.textContent = eq.letter || puzzleData.word[index]; // Show the letter
     
-            // === NEW: Copy color from the final guess cell ===
-            // Check if the final guess cell has .correct, .present, or .absent
+            // Copy color from the final guess cell
             if (finalGuessCells[index].classList.contains('correct')) {
                 letterBadge.classList.add('correct');
             } else if (finalGuessCells[index].classList.contains('present')) {
@@ -926,6 +981,62 @@ function handleKeyInput(key) {
         });
     
         explanationSection.appendChild(explanationList);
+    
+        // Add Play Again button for unlimited mode
+        if (isUnlimited) {
+            const unlimitedContainer = document.createElement('div');
+            unlimitedContainer.className = 'unlimited-cta-section';
+            unlimitedContainer.style.textAlign = 'center';
+            unlimitedContainer.style.marginTop = '30px';
+    
+            const unlimitedTitle = document.createElement('h4');
+            unlimitedTitle.className = 'unlimited-cta-title';
+            unlimitedTitle.textContent = 'Ready for another challenge?';
+    
+            const playAgainButton = document.createElement('button');
+            playAgainButton.id = 'explanation-play-again-button';
+            playAgainButton.className = 'start-button';
+            playAgainButton.textContent = 'Play Another Physicle';
+            playAgainButton.style.backgroundColor = 'var(--accent-color)';
+            playAgainButton.style.marginTop = '15px';
+    
+            playAgainButton.addEventListener('click', () => {
+                startUnlimitedGame();
+            });
+    
+            unlimitedContainer.appendChild(unlimitedTitle);
+            unlimitedContainer.appendChild(playAgainButton);
+            explanationSection.appendChild(unlimitedContainer);
+        } else {
+            // For daily mode, show unlimited mode button (unchanged)
+            const unlimitedContainer = document.createElement('div');
+            unlimitedContainer.className = 'unlimited-cta-section';
+            unlimitedContainer.style.textAlign = 'center';
+            unlimitedContainer.style.marginTop = '30px';
+    
+            const unlimitedTitle = document.createElement('h4');
+            unlimitedTitle.className = 'unlimited-cta-title';
+            unlimitedTitle.textContent = 'Ready for more challenges?';
+    
+            const unlimitedSubtitle = document.createElement('p');
+            unlimitedSubtitle.className = 'unlimited-cta-subtitle';
+            unlimitedSubtitle.textContent = 'Try unlimited mode for endless physics puzzles!';
+    
+            const inlineUnlimitedButton = document.createElement('button');
+            inlineUnlimitedButton.id = 'explanation-unlimited-button';
+            inlineUnlimitedButton.className = 'start-button';
+            inlineUnlimitedButton.textContent = 'Play Unlimited Mode';
+    
+            inlineUnlimitedButton.addEventListener('click', () => {
+                stopTimer();
+                startUnlimitedGame();
+            });
+    
+            unlimitedContainer.appendChild(unlimitedTitle);
+            unlimitedContainer.appendChild(unlimitedSubtitle);
+            unlimitedContainer.appendChild(inlineUnlimitedButton);
+            explanationSection.appendChild(unlimitedContainer);
+        }
     
         // Finally, add the explanation section after the game board
         const gameContainer = document.querySelector('.game-container');
@@ -1115,87 +1226,206 @@ function applyColorsToRow(rowIndex) {
     updateKeyboardFromRow(guess, rowCells);
 }
 
-	// Show success message
-	function showSuccessMessage() {
-		setTimeout(() => {
-			const successMessage = document.createElement('div');
-			successMessage.style.position = 'fixed';
-			successMessage.style.top = '20%';
-			successMessage.style.left = '50%';
-			successMessage.style.transform = 'translateX(-50%)';
-			successMessage.style.backgroundColor = 'var(--card-bg)';
-			successMessage.style.padding = '20px 30px';
-			successMessage.style.borderRadius = '12px';
-			successMessage.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-			successMessage.style.zIndex = '1000';
-			successMessage.style.textAlign = 'center';
-			successMessage.innerHTML = `
+// Modified showSuccessMessage function with auto-close for daily mode
+function showSuccessMessage() {
+    setTimeout(() => {
+        const messageDiv = document.createElement('div');
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.top = '20%';
+        messageDiv.style.left = '50%';
+        messageDiv.style.transform = 'translateX(-50%)';
+        messageDiv.style.backgroundColor = 'var(--card-bg)';
+        messageDiv.style.padding = '20px 30px';
+        messageDiv.style.borderRadius = '12px';
+        messageDiv.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+        messageDiv.style.zIndex = '1000';
+        messageDiv.style.textAlign = 'center';
+        messageDiv.style.width = '90%';
+        messageDiv.style.maxWidth = '400px';
+        messageDiv.className = 'success-modal';
+        messageDiv.style.transition = 'opacity 0.5s ease';
+        
+        if (unlimitedMode) {
+            messageDiv.innerHTML = `
+                <h3 style="color: var(--accent-color); margin-bottom: 10px; font-size: 1.5rem;">Congratulations!</h3>
+                <p style="color: var(--text-color);">You solved the Physicle in ${currentGuess}/${MAX_GUESSES} guesses!</p>
+                <p style="color: var(--text-color);">Time: ${timerElement.textContent}</p>
+                <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">What would you like to do next?</p>
+                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                    <button id="view-solutions-btn" style="flex: 1; margin-right: 8px; background-color: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">View Solutions</button>
+                    <button id="play-again-btn" style="flex: 1; margin-left: 8px; background-color: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">Play Again</button>
+                </div>
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // Play again button
+            document.getElementById('play-again-btn').addEventListener('click', () => {
+                stopTimer();
+                startUnlimitedGame();
+                document.body.removeChild(messageDiv);
+            });
+            
+            // View solutions button
+            document.getElementById('view-solutions-btn').addEventListener('click', () => {
+                document.body.removeChild(messageDiv);
+                showEquationExplanations(true); // Pass true to indicate unlimited mode
+            });
+        } else {
+            // Daily mode completion with auto-close after 5 seconds
+            dailyCompleted = true;
+            
+            messageDiv.innerHTML = `
                 <h3 style="color: var(--accent-color); margin-bottom: 10px; font-size: 1.5rem;">Congratulations!</h3>
                 <p style="color: var(--text-color);">You solved today's Physicle in ${currentGuess}/${MAX_GUESSES} guesses!</p>
                 <p style="color: var(--text-color);">Time: ${timerElement.textContent}</p>
-                <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">Close this message to see the full equations and explanations below.</p>
-                <button style="
-                    margin-top: 15px;
-                    background-color: var(--accent-color);
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                ">Close</button>
+                <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">Scroll down for solutions and Unlimited mode!</p>
+                <button style="margin-top: 15px; background-color: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">Close</button>
             `;
-			document.body.appendChild(successMessage);
+            document.body.appendChild(messageDiv);
+            
+            // Close button functionality
+            const closeButton = messageDiv.querySelector('button');
+            closeButton.addEventListener('click', () => {
+                closeSuccessMessage();
+            });
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                closeSuccessMessage();
+            }, 5000);
+            
+            // Helper function to close the message
+            function closeSuccessMessage() {
+                // Only proceed if the message is still in the DOM
+                if (document.body.contains(messageDiv)) {
+                    // Fade out
+                    messageDiv.style.opacity = '0';
+                    
+                    // Remove after fade animation completes
+                    setTimeout(() => {
+                        if (document.body.contains(messageDiv)) {
+                            document.body.removeChild(messageDiv);
+                            showEquationExplanations();
+                            
+                            // Show the unlimited button
+                            unlimitedButton.style.display = 'block';
+                            
+                            // Save state with completed flag
+                            saveGameState();
+                        }
+                    }, 500);
+                }
+            }
+        }
+    }, 800);
+}
 
-			// Add click event to close button
-			const closeButton = successMessage.querySelector('button');
-			closeButton.addEventListener('click', () => {
-				document.body.removeChild(successMessage);
-				// Show explanation section when dialog is closed
-				showEquationExplanations();
-			});
-		}, 800);
-	}
-
-	// Show failure message
-	function showFailureMessage() {
-		setTimeout(() => {
-			const failureMessage = document.createElement('div');
-			failureMessage.style.position = 'fixed';
-			failureMessage.style.top = '20%';
-			failureMessage.style.left = '50%';
-			failureMessage.style.transform = 'translateX(-50%)';
-			failureMessage.style.backgroundColor = 'var(--card-bg)';
-			failureMessage.style.padding = '20px 30px';
-			failureMessage.style.borderRadius = '12px';
-			failureMessage.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-			failureMessage.style.zIndex = '1000';
-			failureMessage.style.textAlign = 'center';
-			failureMessage.innerHTML = `
+// Modified showFailureMessage function with auto-close for daily mode
+function showFailureMessage() {
+    setTimeout(() => {
+        const failureMessage = document.createElement('div');
+        failureMessage.style.position = 'fixed';
+        failureMessage.style.top = '20%';
+        failureMessage.style.left = '50%';
+        failureMessage.style.transform = 'translateX(-50%)';
+        failureMessage.style.backgroundColor = 'var(--card-bg)';
+        failureMessage.style.padding = '20px 30px';
+        failureMessage.style.borderRadius = '12px';
+        failureMessage.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+        failureMessage.style.zIndex = '1000';
+        failureMessage.style.textAlign = 'center';
+        failureMessage.style.width = '90%';
+        failureMessage.style.maxWidth = '400px';
+        failureMessage.className = 'failure-modal';
+        failureMessage.style.transition = 'opacity 0.5s ease';
+        
+        if (unlimitedMode) {
+            failureMessage.innerHTML = `
                 <h3 style="color: #ef4444; margin-bottom: 10px; font-size: 1.5rem;">Game Over</h3>
                 <p style="color: var(--text-color);">The word was: ${currentWord}</p>
                 <p style="color: var(--text-color);">Better luck next time!</p>
-                <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">Close this message to discover the physics behind today's puzzle below.</p>
-                <button style="
-                    margin-top: 15px;
-                    background-color: var(--primary-color);
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 8px;
-                    cursor: pointer;
-                ">Close</button>
+                <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">What would you like to do next?</p>
+                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                    <button id="view-solutions-btn" style="flex: 1; margin-right: 8px; background-color: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">View Solutions</button>
+                    <button id="play-again-btn" style="flex: 1; margin-left: 8px; background-color: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">Play Again</button>
+                </div>
             `;
-			document.body.appendChild(failureMessage);
+            document.body.appendChild(failureMessage);
+            
+            // Play again button
+            document.getElementById('play-again-btn').addEventListener('click', () => {
+                stopTimer();
+                startUnlimitedGame();
+                document.body.removeChild(failureMessage);
+            });
+            
+            // View solutions button
+            document.getElementById('view-solutions-btn').addEventListener('click', () => {
+                document.body.removeChild(failureMessage);
+                showEquationExplanations(true); // Pass true to indicate unlimited mode
+            });
+        } else {
+            // Daily mode completion with auto-close after 5 seconds
+            dailyCompleted = true;
+            
+            failureMessage.innerHTML = `
+                <h3 style="color: #ef4444; margin-bottom: 10px; font-size: 1.5rem;">Game Over</h3>
+                <p style="color: var(--text-color);">The word was: ${currentWord}</p>
+                <p style="color: var(--text-color);">Better luck next time!</p>
+                <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">Scroll down for solutions and Unlimited mode!</p>
+                <button style="margin-top: 15px; background-color: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">Close</button>
+            `;
+            document.body.appendChild(failureMessage);
+            
+            // Close button functionality
+            const closeButton = failureMessage.querySelector('button');
+            closeButton.addEventListener('click', () => {
+                closeFailureMessage();
+            });
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                closeFailureMessage();
+            }, 5000);
+            
+            // Helper function to close the message
+            function closeFailureMessage() {
+                // Only proceed if the message is still in the DOM
+                if (document.body.contains(failureMessage)) {
+                    // Fade out
+                    failureMessage.style.opacity = '0';
+                    
+                    // Remove after fade animation completes
+                    setTimeout(() => {
+                        if (document.body.contains(failureMessage)) {
+                            document.body.removeChild(failureMessage);
+                            showEquationExplanations();
+                            
+                            // Show the unlimited button
+                            unlimitedButton.style.display = 'block';
+                            
+                            // Save state with completed flag
+                            saveGameState();
+                        }
+                    }, 500);
+                }
+            }
+        }
+    }, 800);
+}
 
-			// Add click event to close button
-			const closeButton = failureMessage.querySelector('button');
-			closeButton.addEventListener('click', () => {
-				document.body.removeChild(failureMessage);
-				// Show explanation section when dialog is closed
-				showEquationExplanations();
-			});
-		}, 800);
-	}
+    function resetKeyboardColors() {
+        // Clear the key color state object
+        for (const key in keyColorState) {
+            delete keyColorState[key];
+        }
+        
+        // Remove color classes from all keyboard keys
+        document.querySelectorAll('.key').forEach(key => {
+            key.classList.remove('correct', 'present', 'absent');
+        });
+    }
+      
 
 	// Start timer
 	function startTimer() {
@@ -1216,29 +1446,64 @@ function applyColorsToRow(rowIndex) {
 		clearInterval(timerInterval);
 	}
 
-	// Start the game
-async function startGame() {
-    // Hide start button and show game board
-    startButton.style.display = 'none';
-    gameBoard.style.display = 'block';
+    async function startGame() {
+        // Hide start button and show game board
+        startButton.style.display = 'none';
+        gameBoard.style.display = 'block';
+    
+        // Reset game state
+        currentGuess = 0;
+        currentPosition = 0;
+        isGameComplete = false;
+        resetKeyboardColors(); 
+    
+        // Make sure the puzzle is loaded before starting
+        if (!todaysPuzzle) {
+            await updateDateDisplay();
+        }
+    
+        // Initialize game
+        createAnswerGrid();
+        createEquations();
+        startTimer();
+        
+        saveGameState();
+    }
 
-    // Reset game state
+async function startUnlimitedGame() {
+    unlimitedMode = true;
+    // Hide both daily and unlimited start buttons
+    document.getElementById('start-button').style.display = 'none';
+    document.getElementById('unlimited-button').style.display = 'none';
+    
+    // Hide any existing explanation section
+    const explanationSection = document.getElementById('explanation-section');
+    if (explanationSection) {
+        explanationSection.style.display = 'none';
+    }
+    
+    gameBoard.style.display = 'block';
+    
+    // Update puzzle number display for unlimited mode
+    puzzleNumber.textContent = "Unlimited Mode";
+  
+    // Reset state variables
     currentGuess = 0;
     currentPosition = 0;
     isGameComplete = false;
-
-    // Make sure the puzzle is loaded before starting
-    if (!todaysPuzzle) {
-        await updateDateDisplay();
-    }
-
-    // Initialize game
+    resetKeyboardColors();
+  
+    // Generate a new random puzzle
+    const puzzle = await generateUnlimitedPuzzle();
+    todaysPuzzle = puzzle;
+    currentWord = puzzle.word;
+  
+    // Initialize the board
     createAnswerGrid();
     createEquations();
     startTimer();
-    
-    saveGameState();
 }
+  
 
 	// Add event listeners
 	startButton.addEventListener('click', () => {
@@ -1248,6 +1513,13 @@ async function startGame() {
 		});
 	});
 
+    unlimitedButton.addEventListener('click', () => {
+        startUnlimitedGame().catch(error => {
+            console.error('Error starting unlimited game:', error);
+            alert('There was an error starting the unlimited game.');
+        });
+    });
+      
 	// On-screen keyboard clicks
 	document.querySelectorAll('.key').forEach(key => {
 		key.addEventListener('click', function() {
