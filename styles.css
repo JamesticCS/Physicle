@@ -1041,7 +1041,7 @@ footer a:hover {
 
 
 .mobile-pulse::after {
-    content: "Tap to start";
+    content: "";
     position: absolute;
     bottom: -30px;
     left: 50%;
@@ -1135,4 +1135,326 @@ footer a:hover {
     opacity: 1;
     transition: opacity 0.3s ease;
   }
+
+  /* Style for the Play Unlimited button */
+#unlimited-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 30px auto;
+    display: block;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    font-family: 'Outfit', sans-serif;
+  }
   
+  #unlimited-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+  }
+  
+  #unlimited-button:active {
+    transform: translateY(1px);
+  }
+  
+  /* Buttons in unlimited-mode end-of-game dialogs */
+  .unlimited-message-btn {
+    margin-top: 15px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    font-family: 'Outfit', sans-serif;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .unlimited-play-again {
+    background-color: var(--accent-color);
+    color: white;
+  }
+  
+  .unlimited-show-solutions {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .unlimited-message-btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  .unlimited-message-btn:active {
+    transform: translateY(1px);
+  }
+  
+
+  /* Add this to your existing CSS file */
+
+/* Styling for the Play Unlimited button on the main page */
+#unlimited-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 10px auto 30px;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  #unlimited-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+  }
+  
+  #unlimited-button:active {
+    transform: translateY(1px);
+  }
+  
+  /* Styling for the unlimited mode button in the explanation section */
+  #explanation-unlimited-button {
+    background-color: var(--primary-color);
+    margin-top: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  #explanation-unlimited-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+  }
+  
+  /* Special styling for the explanation section unlimited mode container */
+  .unlimited-mode-container {
+    text-align: center;
+    margin-top: 30px;
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .unlimited-mode-message {
+    margin-bottom: 15px;
+    color: var(--light-text);
+    font-size: 1.1rem;
+  }
+  
+  /* Style for the unlimited mode indicator */
+  .unlimited-mode-badge {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-left: 10px;
+    vertical-align: middle;
+    font-family: 'Space Mono', monospace;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+  }
+  
+  /* Make puzzle number appear differently in unlimited mode */
+  .puzzle-number.unlimited-active {
+    color: var(--primary-color);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  
+  /* Animation for revealing the unlimited button after completing daily puzzle */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in-up {
+    animation: fadeInUp 0.8s forwards;
+  }
+  
+  /* Custom styling for the unlimited section in the explanation */
+  .unlimited-cta-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px dashed var(--border-color);
+    text-align: center;
+    animation: fadeInUp 0.8s forwards;
+    animation-delay: 0.3s;
+    opacity: 0;
+  }
+  
+  .unlimited-cta-title {
+    font-family: 'Space Mono', monospace;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+  
+  .unlimited-cta-subtitle {
+    color: var(--light-text);
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  /* Fix for the main "Play today's Physicle" button */
+#start-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 30px auto;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  #start-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+  }
+  
+  #start-button:active {
+    transform: translateY(1px);
+  }
+  
+/* Fix for the main "Play today's Physicle" button */
+#start-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 15px 50px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 30px auto;
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  #start-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+  }
+  
+  #start-button:active {
+    transform: translateY(1px);
+  }
+  
+  /* Fix for the modals/popups */
+  .success-modal, .failure-modal {
+    position: fixed !important;
+    top: 20% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background-color: var(--card-bg);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 1000;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+  }
+
+
+  /* Styling for dual buttons in modals */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+  
+  .modal-btn {
+    flex: 1;
+    margin: 0 5px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s ease;
+  }
+  
+  .modal-btn.primary {
+    background-color: var(--primary-color);
+  }
+  
+  .modal-btn.accent {
+    background-color: var(--accent-color);
+  }
+  
+  .modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Styling for the play again button in explanation section */
+  #explanation-play-again-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 15px;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+  
+  #explanation-play-again-button:hover {
+    background-color: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+  }
+  
+  /* Styling for unlimited mode header in explanation */
+  .unlimited-mode-indicator {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    vertical-align: middle;
+  }

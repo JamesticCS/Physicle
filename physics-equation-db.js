@@ -57,8 +57,8 @@ const physicsEquations = {
             explanation: "Speed of light in vacuum (universal constant)"
         },
         {
-            latex: '\\frac{Q}{V}',
-            fullEquation: 'C = \\frac{Q}{V}',
+            latex: '\\frac{q}{V}',
+            fullEquation: 'C = \\frac{q}{V}',
             explanation: "Definition of capacitance (charge per potential difference)"
         },
         {
@@ -91,9 +91,9 @@ const physicsEquations = {
             explanation: "Mass–energy equivalence from special relativity (Einstein's famous equation)"
         },
         {
-            latex: 'h \\nu',
-            fullEquation: 'E = h \\nu',
-            explanation: "Energy of a photon with frequency ν (Planck–Einstein relation)"
+            latex: 'hf',
+            fullEquation: 'E = hf',
+            explanation: "Energy of a photon with frequency f (Planck–Einstein relation)"
         },
         {
             latex: '-\\frac{13.6~\\text{eV}}{n^2}',
@@ -361,7 +361,7 @@ const physicsEquations = {
             explanation: "Time constant τ of an RC circuit (R = resistance, C = capacitance)"
         },
         {
-            latex: '\\frac{1}{\\sqrt{1 - \\frac{v^2}{c^2}}}',
+            latex: '\\frac{\\Delta t}{\\sqrt{1 - \\frac{v^2}{c^2}}}',
             fullEquation: '\\Delta t\' = \\frac{\\Delta t}{\\sqrt{1 - \\frac{v^2}{c^2}}}',
             explanation: "Time dilation (moving clocks tick slower by factor √(1 - v²/c²))"
         },
@@ -376,11 +376,6 @@ const physicsEquations = {
             latex: 'm g h',
             fullEquation: 'U = m g h',
             explanation: "Gravitational potential energy near Earth's surface"
-        },
-        {
-            latex: '\\frac{3}{2} n R T',
-            fullEquation: 'U = \\frac{3}{2} n R T',
-            explanation: "Internal energy of an ideal monatomic gas (per n moles)"
         }
     ],
     'V': [
@@ -393,11 +388,6 @@ const physicsEquations = {
             latex: '\\frac{1}{4\\pi \\epsilon_0}\\frac{q}{r}',
             fullEquation: 'V = \\frac{1}{4\\pi \\epsilon_0}\\frac{q}{r}',
             explanation: "Electric potential due to a point charge at distance r"
-        },
-        {
-            latex: '\\frac{c}{\\lambda}',
-            fullEquation: 'v = \\frac{c}{\\lambda}',
-            explanation: "The wave speed equation"
         }
     ],
     'W': [
