@@ -1111,3 +1111,28 @@ footer a:hover {
     font-size: 1rem;
     font-family: 'Space Mono', monospace;
 }
+
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+  }
+  .shake {
+    animation: shake 0.5s;
+  }
+  .invalid-word-message {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(239, 68, 68, 0.9);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    z-index: 1500;
+    font-family: 'Space Mono', monospace;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  

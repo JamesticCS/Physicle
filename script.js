@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Game constants
 	const MAX_GUESSES = 4;
 	const WORD_LENGTH = 5;
-    const PUZZLE_VERSION = 5; // Used to regenerate puzzles
+    const PUZZLE_VERSION = 11; // Used to regenerate puzzles
 
     // Tracks the best status for each letter so far: "correct", "present", or "absent"
     const keyColorState = {};
@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	let guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
 	let isGameComplete = false;
 	let todaysPuzzle = null;
+    let validGuesses = [];
+
 
 	const startButton = document.getElementById('start-button');
 	const gameBoard = document.getElementById('game-board');
@@ -49,6 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	const timerElement = document.getElementById('timer');
 
     const physicsEquations = window.physicsEquations
+
+    loadValidGuesses().then(words => {
+        validGuesses = words;
+      });
 
 	// Custom puzzles that override the automatically generated ones for specific dates
 	const customPuzzles = {
@@ -146,6 +152,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			];
 		}
 	}
+
+    async function loadValidGuesses() {
+        try {
+          const response = await fetch('valid-guesses.txt');
+          const text = await response.text();
+          // Convert each word to uppercase for comparison
+          return text.trim().split('\n').map(word => word.toUpperCase());
+        } catch (error) {
+          console.error('Error loading valid guesses:', error);
+          return [];
+        }
+      }
+      
 
 	/**
 	 * Selects a word for a specific date using a deterministic algorithm
@@ -484,27 +503,23 @@ function restoreGameUI() {
 
 			// Handle input
 			mobileInput.addEventListener('input', function(e) {
-				if (isGameComplete || currentGuess >= MAX_GUESSES) return;
-
-				const val = e.target.value.toUpperCase();
-				if (val && val.match(/[A-Z]/)) {
-					// Clear the input so we can capture next letter
-					mobileInput.value = '';
-
-					// If we're at a position with a letter, replace it
-					if (currentPosition < WORD_LENGTH) {
-						guesses[currentGuess][currentPosition] = val;
-
-						// Update display
-						const cell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${currentPosition}"]`);
-						if (cell) cell.textContent = val;
-
-						// Move to next position only if this position wasn't empty
-						currentPosition++;
-						highlightCurrentCell();
-					}
-				}
-			});
+                if (isGameComplete || currentGuess >= MAX_GUESSES) return;
+                const val = e.target.value.toUpperCase();
+                if (val && val.match(/[A-Z]/)) {
+                  mobileInput.value = '';
+                  if (currentPosition < WORD_LENGTH) {
+                    guesses[currentGuess][currentPosition] = val;
+                    const cell = document.querySelector(`.answer-box[data-row="${currentGuess}"][data-col="${currentPosition}"]`);
+                    if (cell) cell.textContent = val;
+                    // Only advance the position if not in the last cell.
+                    if (currentPosition < WORD_LENGTH - 1) {
+                      currentPosition++;
+                    }
+                    highlightCurrentCell();
+                  }
+                }
+              });
+              
 
 			mobileInput.addEventListener('keydown', function(e) {
 				if (isGameComplete || currentGuess >= MAX_GUESSES) return;
@@ -802,12 +817,21 @@ function handleKeyInput(key) {
             updateGuessDisplay();
             saveGameState(); // Save state after deleting
         }
-    } else if (key.length === 1 && key.match(/[A-Z]/i) && currentPosition < WORD_LENGTH) {
-        guesses[currentGuess][currentPosition] = key.toUpperCase();
-        updateGuessDisplay();
-        currentPosition++;
-        saveGameState(); // Save state after entering letter
-    }
+    }  else if (key.length === 1 && key.match(/[A-Z]/i)) {
+        // If not at the last box, write letter and advance; if at last, just write letter.
+        if (currentPosition < WORD_LENGTH - 1) {
+          guesses[currentGuess][currentPosition] = key.toUpperCase();
+          updateGuessDisplay();
+          currentPosition++;
+        } else if (currentPosition === WORD_LENGTH - 1) {
+          guesses[currentGuess][currentPosition] = key.toUpperCase();
+          updateGuessDisplay();
+          // Do not increment currentPosition further.
+        }
+        saveGameState();
+        highlightCurrentCell();
+      }
+      
 
     highlightCurrentCell();
 }
@@ -919,10 +943,34 @@ function handleKeyInput(key) {
 		}
 	}
 
+    function showInvalidGuessFeedback() {
+        const rowCells = document.querySelectorAll(`.answer-box[data-row="${currentGuess}"]`);
+        rowCells.forEach(cell => cell.classList.add('shake'));
+        setTimeout(() => {
+          rowCells.forEach(cell => cell.classList.remove('shake'));
+        }, 500);
+      
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'invalid-word-message';
+        errorMessage.textContent = 'Not a valid word';
+        document.body.appendChild(errorMessage);
+        setTimeout(() => {
+          errorMessage.style.opacity = '0';
+          setTimeout(() => {
+            if (errorMessage.parentElement) errorMessage.parentElement.removeChild(errorMessage);
+          }, 300);
+        }, 1000);
+      }
+
 	// Submit the current guess and check against the answer
     function submitGuess() {
         const guess = guesses[currentGuess].join('');
         if (guess.length !== WORD_LENGTH) return;
+
+        if (!validGuesses.includes(guess)) {
+            showInvalidGuessFeedback();
+            return;
+          }
     
         // Apply colors based on correctness
         applyColors();
