@@ -15,7 +15,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/contrib/auto-render.min.js"></script>
     
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -46,7 +45,6 @@
                 </li>
                 <li>Each equation is a hint for the letter directly below it in the solution word!</li>
             </ul>
-            <!-- Updated equation example with arrow -->
     <div class="equation-example">
         <div class="equation-box">
             <span class="latex">mc^2</span>
@@ -114,6 +112,7 @@
 
         <div class="date-display" id="date-display"></div>
         <div class="puzzle-number" id="puzzle-number"></div>
+        <div id="streak-display" class="streak-display">Streak: 0</div>
     </div>
 
     <footer>
@@ -125,7 +124,7 @@
         </div>
     </footer>
 
-    <!-- Custom JavaScript -->
+    <script src="physics-equation-db.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

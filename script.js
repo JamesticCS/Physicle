@@ -1,39 +1,34 @@
 /*
 HOW TO ADD CUSTOM DAILY PUZZLES:
 
-1. Find the "dailyPuzzles" object below
+Puzzles are automatically generated using the physics equation database!
+However, you can still add custom puzzles for specific dates:
+
+1. Find the "customPuzzles" object below
 2. Add new puzzles using this format:
 
 "YYYY-MM-DD": {
     word: "XXXXX",  // 5-letter word (will be the solution)
     equations: [
-        { latex: 'your-latex-equation-1', letter: "X" },
-        { latex: 'your-latex-equation-2', letter: "X" },
-        { latex: 'your-latex-equation-3', letter: "X" },
-        { latex: 'your-latex-equation-4', letter: "X" },
-        { latex: 'your-latex-equation-5', letter: "X" }
+        { latex: 'your-latex-equation-1', letter: "X", fullEquation: "...", explanation: "..." },
+        { latex: 'your-latex-equation-2', letter: "X", fullEquation: "...", explanation: "..." },
+        { latex: 'your-latex-equation-3', letter: "X", fullEquation: "...", explanation: "..." },
+        { latex: 'your-latex-equation-4', letter: "X", fullEquation: "...", explanation: "..." },
+        { latex: 'your-latex-equation-5', letter: "X", fullEquation: "...", explanation: "..." }
     ]
 }
-
-LaTeX Examples:
-- Fractions: \frac{a}{b}
-- Exponents: a^2
-- Subscripts: a_i
-- Greek letters: \alpha, \beta, \gamma, \Delta, \lambda
-- Integrals: \int_a^b f(x) \, dx
-- Square roots: \sqrt{x}
-- Vectors: \vec{F}
-- Partial derivatives: \frac{\partial f}{\partial x}
-- Nabla operator: \nabla
-- Infinity: \infty
-- For more LaTeX examples, visit: https://katex.org/docs/supported.html
 */
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-	// Game constants
+
+    // Game constants
 	const MAX_GUESSES = 4;
 	const WORD_LENGTH = 5;
+    const PUZZLE_VERSION = 5; // Used to regenerate puzzles
+
+    // Tracks the best status for each letter so far: "correct", "present", or "absent"
+    const keyColorState = {};
 
 	// Game state variables
 	let currentGuess = 0;
@@ -43,78 +38,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	let currentWord = "QUARK"; // Default word
 	let guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
 	let isGameComplete = false;
+	let todaysPuzzle = null;
 
-	// Custom puzzles database - you can add new puzzles here
-	const dailyPuzzles = {
+	const startButton = document.getElementById('start-button');
+	const gameBoard = document.getElementById('game-board');
+	const equationsContainer = document.getElementById('equations');
+	const answersContainer = document.getElementById('answers');
+	const dateDisplay = document.getElementById('date-display');
+	const puzzleNumber = document.getElementById('puzzle-number');
+	const timerElement = document.getElementById('timer');
+
+    const physicsEquations = window.physicsEquations
+
+	// Custom puzzles that override the automatically generated ones for specific dates
+	const customPuzzles = {
 		// Format: "YYYY-MM-DD": { word: "XXXXX", equations: [{ latex: "...", letter: "X", fullEquation: "...", explanation: "..." }, ...] }
-		"2025-02-28": {
-			word: "QUARK",
-			equations: [{
-					latex: 'mc \\Delta T',
-					letter: "Q",
-					fullEquation: 'Q = mc\\Delta T',
-					explanation: "Heat energy equation"
-				},
-				{
-					latex: 'mgh',
-					letter: "U",
-					fullEquation: 'U = mgh',
-					explanation: "Gravitational potential energy"
-				},
-				{
-					latex: '\\frac{dv}{dt}',
-					letter: "A",
-					fullEquation: 'a = \\frac{dv}{dt}',
-					explanation: "Acceleration definition"
-				},
-				{
-					latex: '\\frac{V}{I}',
-					letter: "R",
-					fullEquation: 'R = \\frac{V}{I}',
-					explanation: "Ohm's Law"
-				},
-				{
-					latex: '\\frac{1}{2}mv^2',
-					letter: "K",
-					fullEquation: 'K = \\frac{1}{2}mv^2',
-					explanation: "Kinetic energy"
-				}
-			]
-		},
-		"2025-02-29": {
-			word: "FORCE",
-			equations: [{
-					latex: 'ma',
-					letter: "F",
-					fullEquation: 'F = ma',
-					explanation: "Newton's Second Law"
-				},
-				{
-					latex: '\\omega r',
-					letter: "O",
-					fullEquation: 'v = \\omega r',
-					explanation: "Orbital velocity"
-				},
-				{
-					latex: '\\rho V g',
-					letter: "R",
-					fullEquation: 'F_B = \\rho V g',
-					explanation: "Buoyant force (Archimedes' principle)"
-				},
-				{
-					latex: '\\lambda f',
-					letter: "C",
-					fullEquation: 'c = \\lambda f',
-					explanation: "Wave speed equation"
-				},
-				{
-					latex: 'mc^2',
-					letter: "E",
-					fullEquation: 'E = mc^2',
-					explanation: "Mass-energy equivalence"
-				}
-			]
-		},
 		"2025-03-01": {
 			word: "BRAVE",
 			equations: [{
@@ -149,20 +87,152 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 			]
 		}
-		// Add or update other puzzles as needed
+		// add more puzzles here!!!
 	};
 
-	// Get DOM elements
-	const startButton = document.getElementById('start-button');
-	const gameBoard = document.getElementById('game-board');
-	const equationsContainer = document.getElementById('equations');
-	const answersContainer = document.getElementById('answers');
-	const dateDisplay = document.getElementById('date-display');
-	const puzzleNumber = document.getElementById('puzzle-number');
-	const timerElement = document.getElementById('timer');
+     // Initialize date display first to get today's puzzle
+     updateDateDisplay().then(() => {
+        // Check if we have a saved game state for today
+        const hasSavedState = loadGameState();
+    
+    if (hasSavedState) {
+        if (isGameComplete) {
+            // Game was already completed
+            gameBoard.style.display = 'block';
+            startButton.style.display = 'none';
+            restoreGameUI();
+        } else {
+            // Game was in progress
+            gameBoard.style.display = 'block';
+            startButton.style.display = 'none';
+            restoreGameUI();
+            
+            // Restart timer for in-progress game
+            if (startTime) {
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+    } else {
+        // No saved state, show start button
+        startButton.style.display = 'block';
+        gameBoard.style.display = 'none';
+    }
+}).catch(error => {
+    console.error('Error initializing game:', error);
+});
+	
+
+	/**
+	 * Loads the Wordle answer list from the external file
+	 * @returns {Promise<string[]>} Array of 5-letter words
+	 */
+	async function loadWordleAnswers() {
+		try {
+			// Load the file content
+			const response = await fetch('wordle-answers-alphabetical.txt');
+			const text = await response.text();
+			
+			// Split the text into an array of words
+			const words = text.trim().split('\n');
+			
+			return words;
+		} catch (error) {
+			console.error('Error loading Wordle answers:', error);
+			// Fallback to a small set of words if file cannot be loaded
+			return [
+				"force", "quark", "light", "space", "phase", 
+				"laser", "power", "optic", "sound", "decay",
+				"brave", "alien", "ghost", "robot", "virus"
+			];
+		}
+	}
+
+	/**
+	 * Selects a word for a specific date using a deterministic algorithm
+	 * @param {Date} date - The date to select a word for
+	 * @param {string[]} wordList - Array of available words
+	 * @returns {string} The selected word
+	 */
+	function selectWordForDate(date, wordList, version = PUZZLE_VERSION) {
+		// Create a deterministic seed based on the date
+		// This ensures the same word is chosen for a specific date
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const day = date.getDate();
+		
+		// Create a simple hash from the date
+		const dateHash = (year * 10000) + (month * 100) + day + version;
+		
+		// Use the hash to select a word from the list
+		const index = dateHash % wordList.length;
+		
+		return wordList[index].toUpperCase();
+	}
+
+	/**
+ * Selects an equation for a given letter based on the date
+ * @param {string} letter - The letter to find an equation for
+ * @param {Date} date - The date to use for selection
+ * @returns {Object} The selected equation object
+ */
+function selectEquationForLetter(letter, date, version = PUZZLE_VERSION) {
+    // Get equations available for this letter
+    const availableEquations = physicsEquations[letter];
+    
+    // If no equations are available for this letter, return a placeholder
+    if (!availableEquations || availableEquations.length === 0) {
+        return {
+            latex: '?',
+            letter: letter,
+            fullEquation: `${letter} = ?`,
+            explanation: `No equation available for letter ${letter}`
+        };
+    }
+    
+    // Create a deterministic index based on the date and letter
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    
+    // Use letter code as an additional seed
+    const letterCode = letter.charCodeAt(0);
+    
+    // Create a hash from date and letter
+    const dateLetterHash = (year * 10000) + (month * 100) + day + letterCode + version;
+    
+    // Use the hash to select an equation
+    const index = dateLetterHash % availableEquations.length;
+    
+    // Return the selected equation with the letter property added
+    return {
+        ...availableEquations[index],
+        letter: letter
+    };
+}
+
+	/**
+	 * Generates a complete puzzle for a specific date
+	 * @param {Date} date - The date to generate a puzzle for
+	 * @returns {Promise<Object>} The complete puzzle object
+	 */
+	async function generatePuzzleForDate(date, version = PUZZLE_VERSION) {
+        const wordList = await loadWordleAnswers();
+        const word = selectWordForDate(date, wordList, version);
+        const equations = [];
+        for (let i = 0; i < word.length; i++) {
+            const letter = word[i];
+            const equation = selectEquationForLetter(letter, date, version);
+            equations.push(equation);
+        }
+        return {
+            word,
+            equations
+        };
+    }
+    
 
 	// Display current date and load the corresponding puzzle
-	function updateDateDisplay() {
+	async function updateDateDisplay() {
 		const now = new Date();
 		const options = {
 			year: 'numeric',
@@ -179,41 +249,218 @@ document.addEventListener('DOMContentLoaded', function() {
 		const dateString = `${year}-${month}-${day}`;
 
 		// Try to load puzzle for today's date
-		loadPuzzleForDate(dateString);
+		await loadPuzzleForDate(dateString);
 	}
 
-	// Load puzzle for a specific date
-	function loadPuzzleForDate(dateString) {
-		// Check if we have a puzzle for this date
-		if (dailyPuzzles[dateString]) {
-			currentWord = dailyPuzzles[dateString].word.toUpperCase();
-		} else {
-			// If no puzzle exists for today, use the default
-			const dates = Object.keys(dailyPuzzles).sort();
-			if (dates.length > 0) {
-				// Find the most recent puzzle
-				const pastDates = dates.filter(date => date <= dateString);
-				const mostRecent = pastDates.length > 0 ?
-					pastDates[pastDates.length - 1] : dates[0];
+	// Load puzzle for a specific date - first check custom puzzles, then generate one
+	async function loadPuzzleForDate(dateString) {
+		// Check if we have a custom puzzle for this date
+		if (customPuzzles[dateString]) {
+			todaysPuzzle = customPuzzles[dateString];
+			currentWord = todaysPuzzle.word.toUpperCase();
+			return;
+		}
 
-				currentWord = dailyPuzzles[mostRecent].word.toUpperCase();
-			} else {
-				// Fallback to default if no puzzles exist
-				currentWord = "QUARK";
-			}
+		try {
+			// Parse the date string
+			const [year, month, day] = dateString.split('-').map(Number);
+			const date = new Date(year, month - 1, day); // month is 0-indexed in JavaScript
+			
+			// Generate a puzzle
+			todaysPuzzle = await generatePuzzleForDate(date);
+			currentWord = todaysPuzzle.word;
+		} catch (error) {
+			console.error('Error generating puzzle:', error);
+			// Fallback to default word and puzzle
+			currentWord = "QUARK";
+			todaysPuzzle = {
+				word: currentWord,
+				equations: [
+					{
+						latex: 'mc \\Delta T',
+						letter: "Q",
+						fullEquation: 'Q = mc\\Delta T',
+						explanation: "Heat energy equation"
+					},
+					{
+						latex: 'mgh',
+						letter: "U",
+						fullEquation: 'U = mgh',
+						explanation: "Gravitational potential energy"
+					},
+					{
+						latex: '\\frac{dv}{dt}',
+						letter: "A",
+						fullEquation: 'a = \\frac{dv}{dt}',
+						explanation: "Acceleration definition"
+					},
+					{
+						latex: '\\frac{V}{I}',
+						letter: "R",
+						fullEquation: 'R = \\frac{V}{I}',
+						explanation: "Ohm's Law"
+					},
+					{
+						latex: '\\frac{1}{2}mv^2',
+						letter: "K",
+						fullEquation: 'K = \\frac{1}{2}mv^2',
+						explanation: "Kinetic energy"
+					}
+				]
+			};
 		}
 	}
+
+// Save the current game state to localStorage
+function saveGameState() {
+    // Get current date string for the key
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    
+    // Calculate elapsed time if timer is running
+    let elapsedTime = timerElement.textContent;
+    let elapsedMs = 0;
+    if (startTime) {
+        elapsedMs = Date.now() - startTime;
+    }
+    
+    // Create an object with all the necessary game state
+    const gameState = {
+        date: dateString,
+        word: currentWord,
+        guesses: guesses,
+        currentGuess: currentGuess,
+        currentPosition: currentPosition,
+        isGameComplete: isGameComplete,
+        startTime: startTime ? elapsedMs : null,
+        elapsedTime: elapsedTime,
+        puzzleData: todaysPuzzle
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('physicle_state', JSON.stringify(gameState));
+    console.log('Game state saved:', gameState); // Debugging
+}
+
+// Load saved game state from localStorage
+function loadGameState() {
+    try {
+        // Get saved state
+        const savedState = localStorage.getItem('physicle_state');
+        if (!savedState) {
+            console.log('No saved state found'); // Debugging
+            return false;
+        }
+        
+        const gameState = JSON.parse(savedState);
+        console.log('Loaded game state:', gameState); // Debugging
+        
+        // Check if the saved state is for today
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+        
+        if (gameState.date !== dateString) {
+            // State is from a different day, don't use it
+            console.log('Saved state is from a different day:', gameState.date); // Debugging
+            return false;
+        }
+        
+        // Restore game state
+        currentWord = gameState.word;
+        guesses = gameState.guesses;
+        currentGuess = gameState.currentGuess;
+        currentPosition = gameState.currentPosition || 0;
+        isGameComplete = gameState.isGameComplete;
+        todaysPuzzle = gameState.puzzleData;
+        
+        // If the game was in progress, restore the timer
+        if (gameState.startTime && !isGameComplete) {
+            // Set start time based on elapsed time
+            startTime = Date.now() - gameState.startTime;
+            
+            // Update timer display
+            const elapsedMilliseconds = gameState.startTime;
+            const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+            const minutes = Math.floor(elapsedSeconds / 60);
+            const seconds = elapsedSeconds % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        } else if (isGameComplete && gameState.elapsedTime) {
+            // Game was complete, just show the final time
+            timerElement.textContent = gameState.elapsedTime;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error loading game state:', error);
+        return false;
+    }
+}
+
+// Function to update the UI based on loaded game state
+function restoreGameUI() {
+    console.log('Restoring UI with current state. isGameComplete:', isGameComplete);
+
+    // Create the answer grid
+    createAnswerGrid(true);
+
+    // Create the equations
+    createEquations();
+
+    // Restore completed guesses (rows 0 to currentGuess-1)
+    for (let i = 0; i < currentGuess; i++) {
+        const guess = guesses[i];
+        for (let j = 0; j < WORD_LENGTH; j++) {
+            const cell = document.querySelector(`.answer-box[data-row="${i}"][data-col="${j}"]`);
+            if (cell) {
+                cell.textContent = guess[j];
+            }
+        }
+        applyColorsToRow(i);
+    }
+
+    // If game is not complete, clear any partial letters from the current guess row
+    if (!isGameComplete && currentGuess < MAX_GUESSES) {
+        // Reset the current row in the guesses array
+        guesses[currentGuess] = Array(WORD_LENGTH).fill('');
+        // Also reset the current position to the beginning of the row
+        currentPosition = 0;
+    }
+
+    if (isGameComplete) {
+        console.log('Game is complete, showing completion message');
+        const lastGuess = guesses[currentGuess - 1].join('');
+        const isWin = (lastGuess === currentWord);
+        setTimeout(() => {
+            if (isWin) {
+                showSuccessMessage();
+            } else {
+                showFailureMessage();
+            }
+        }, 500);
+    } else {
+        highlightCurrentCell();
+    }
+}
+
 
 	function isMobileDevice() {
 		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 	}
 
 	// Create the answer grid
-	function createAnswerGrid() {
-		answersContainer.innerHTML = '';
+	function createAnswerGrid(isRestoring = false) {
+    answersContainer.innerHTML = '';
 
-		// Reset guesses
-		guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
+    // Only reset guesses if we're not restoring a saved game
+    if (!isRestoring) {
+        guesses = Array(MAX_GUESSES).fill().map(() => Array(WORD_LENGTH).fill(''));
+    }
 
 		// Check if mobile
 		const isMobile = isMobileDevice();
@@ -344,8 +591,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		// Initialize game state
-		// Initialize game state
-		// Initialize game state
 		if (isMobile) {
 			// Focus the mobile input to bring up keyboard
 			setTimeout(() => {
@@ -420,26 +665,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	function createEquations() {
 		equationsContainer.innerHTML = '';
 
-		// Get today's date
-		const now = new Date();
-		const year = now.getFullYear();
-		const month = String(now.getMonth() + 1).padStart(2, '0');
-		const day = String(now.getDate()).padStart(2, '0');
-		const dateString = `${year}-${month}-${day}`;
-
-		// Get puzzle for today or fallback
-		let equations;
-		if (dailyPuzzles[dateString]) {
-			equations = dailyPuzzles[dateString].equations;
-		} else {
-			// Find the most recent puzzle
-			const dates = Object.keys(dailyPuzzles).sort();
-			const pastDates = dates.filter(date => date <= dateString);
-			const mostRecent = pastDates.length > 0 ?
-				pastDates[pastDates.length - 1] : dates[0];
-
-			equations = dailyPuzzles[mostRecent].equations;
-		}
+		// Use today's puzzle equations
+		const equations = todaysPuzzle ? todaysPuzzle.equations : [];
 
 		for (let i = 0; i < equations.length; i++) {
 			const eqDiv = document.createElement('div');
@@ -514,41 +741,18 @@ document.addEventListener('DOMContentLoaded', function() {
 				expandedLatex.className = 'latex';
 				expandedEq.appendChild(expandedLatex);
 
-				// During gameplay, only show the compact equation
-				// Important: we're only getting the original latex content from the equation
-				const compactEquation = latexElement.textContent;
+				// Use today's puzzle equations
+				const puzzleEquations = todaysPuzzle ? todaysPuzzle.equations : [];
 
-				// Get today's date to find the current puzzle
-				const now = new Date();
-				const year = now.getFullYear();
-				const month = String(now.getMonth() + 1).padStart(2, '0');
-				const day = String(now.getDate()).padStart(2, '0');
-				const dateString = `${year}-${month}-${day}`;
-
-				// Get current puzzle
-				let equations;
-				if (dailyPuzzles[dateString]) {
-					equations = dailyPuzzles[dateString].equations;
-				} else {
-					// Find most recent puzzle
-					const dates = Object.keys(dailyPuzzles).sort();
-					const pastDates = dates.filter(date => date <= dateString);
-					const mostRecent = pastDates.length > 0 ?
-						pastDates[pastDates.length - 1] : dates[0];
-
-					equations = dailyPuzzles[mostRecent].equations;
-				}
-
-				// During gameplay, only show the compact equation that's already visible
-				// We'll use the original latex from the puzzle data to ensure proper formatting
-				if (equations && equations[index] && equations[index].latex) {
-					katex.render(equations[index].latex, expandedLatex, {
+				// During gameplay, only show the equation that's already visible
+				if (puzzleEquations && puzzleEquations[index] && puzzleEquations[index].latex) {
+					katex.render(puzzleEquations[index].latex, expandedLatex, {
 						throwOnError: false,
 						displayMode: true
 					});
 				} else {
 					// Fallback if something goes wrong
-					katex.render(compactEquation, expandedLatex, {
+					katex.render(latexElement.textContent, expandedLatex, {
 						throwOnError: false,
 						displayMode: true
 					});
@@ -573,36 +777,40 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
-	// Handle keyboard input
-	function handleKeyInput(key) {
-		if (isGameComplete || currentGuess >= MAX_GUESSES) return;
+// Handle keyboard input
+function handleKeyInput(key) {
+    if (isGameComplete || currentGuess >= MAX_GUESSES) return;
 
-		if (key === 'ENTER') {
-			// For PC - Check if we have entered all 5 letters
-			if (currentPosition === WORD_LENGTH) {
-				submitGuess();
-			}
-		} else if (key === 'BACKSPACE') {
-			// Fix for backspace on PC
-			// If there's a letter at the current position, delete it
-			if (guesses[currentGuess][currentPosition] !== '') {
-				guesses[currentGuess][currentPosition] = '';
-				updateGuessDisplay();
-			}
-			// Otherwise, move back and delete the previous letter
-			else if (currentPosition > 0) {
-				currentPosition--;
-				guesses[currentGuess][currentPosition] = '';
-				updateGuessDisplay();
-			}
-		} else if (key.length === 1 && key.match(/[A-Z]/i) && currentPosition < WORD_LENGTH) {
-			guesses[currentGuess][currentPosition] = key.toUpperCase();
-			updateGuessDisplay();
-			currentPosition++;
-		}
+    if (key === 'ENTER') {
+        // For PC - Check if we have entered all 5 letters
+        if (guesses[currentGuess].every(letter => letter !== '')) {
+            submitGuess();
+            // submitGuess already saves state
+        }
+    } else if (key === 'BACKSPACE') {
+        // Fix for backspace on PC
+        // If there's a letter at the current position, delete it
+        if (guesses[currentGuess][currentPosition] !== '') {
+            guesses[currentGuess][currentPosition] = '';
+            updateGuessDisplay();
+            saveGameState(); // Save state after deleting
+        }
+        // Otherwise, move back and delete the previous letter
+        else if (currentPosition > 0) {
+            currentPosition--;
+            guesses[currentGuess][currentPosition] = '';
+            updateGuessDisplay();
+            saveGameState(); // Save state after deleting
+        }
+    } else if (key.length === 1 && key.match(/[A-Z]/i) && currentPosition < WORD_LENGTH) {
+        guesses[currentGuess][currentPosition] = key.toUpperCase();
+        updateGuessDisplay();
+        currentPosition++;
+        saveGameState(); // Save state after entering letter
+    }
 
-		highlightCurrentCell();
-	}
+    highlightCurrentCell();
+}
 
 	function handleEnterKey() {
 		if (isGameComplete || currentGuess >= MAX_GUESSES) return;
@@ -615,96 +823,91 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function showEquationExplanations() {
-		// Check if explanation section already exists and remove it
-		const existingExplanation = document.getElementById('explanation-section');
-		if (existingExplanation) {
-			existingExplanation.remove();
-		}
-
-		// Get current puzzle data
-		const now = new Date();
-		const year = now.getFullYear();
-		const month = String(now.getMonth() + 1).padStart(2, '0');
-		const day = String(now.getDate()).padStart(2, '0');
-		const dateString = `${year}-${month}-${day}`;
-
-		// Get puzzle for today or fallback
-		let puzzleData;
-		if (dailyPuzzles[dateString]) {
-			puzzleData = dailyPuzzles[dateString];
-		} else {
-			// Find the most recent puzzle
-			const dates = Object.keys(dailyPuzzles).sort();
-			const pastDates = dates.filter(date => date <= dateString);
-			const mostRecent = pastDates.length > 0 ?
-				pastDates[pastDates.length - 1] : dates[0];
-
-			puzzleData = dailyPuzzles[mostRecent];
-		}
-
-		// Create explanation section
-		const explanationSection = document.createElement('div');
-		explanationSection.id = 'explanation-section';
-		explanationSection.className = 'explanation-section';
-
-		// Add title
-		const explanationTitle = document.createElement('h3');
-		explanationTitle.className = 'explanation-title';
-		explanationTitle.textContent = `Today's Solution: ${puzzleData.word}`;
-		explanationSection.appendChild(explanationTitle);
-
-		// Add subtitle with brief explanation
-		const explanationSubtitle = document.createElement('p');
-		explanationSubtitle.className = 'explanation-subtitle';
-		explanationSubtitle.textContent = 'Here are the physics equations behind each letter:';
-		explanationSection.appendChild(explanationSubtitle);
-
-		// Create list of explanations
-		const explanationList = document.createElement('div');
-		explanationList.className = 'explanation-list';
-
-		// Add each equation and its explanation
-		puzzleData.equations.forEach((eq, index) => {
-			const explanationItem = document.createElement('div');
-			explanationItem.className = 'explanation-item';
-
-			// Create letter badge
-			const letterBadge = document.createElement('div');
-			letterBadge.className = 'explanation-letter';
-			letterBadge.textContent = eq.letter;
-			explanationItem.appendChild(letterBadge);
-
-			// Create equation container
-			const equationContainer = document.createElement('div');
-			equationContainer.className = 'explanation-equation';
-
-			// Create LaTeX span for full equation
-			const eqSpan = document.createElement('span');
-			eqSpan.className = 'latex';
-			equationContainer.appendChild(eqSpan);
-
-			// Create explanation text
-			const explanationText = document.createElement('div');
-			explanationText.className = 'explanation-text';
-			explanationText.textContent = eq.explanation;
-			equationContainer.appendChild(explanationText);
-
-			explanationItem.appendChild(equationContainer);
-			explanationList.appendChild(explanationItem);
-
-			// Render LaTeX for the full equation
-			katex.render(eq.fullEquation, eqSpan, {
-				throwOnError: false,
-				displayMode: false
-			});
-		});
-
-		explanationSection.appendChild(explanationList);
-
-		// Add the explanation section after the game board
-		const gameContainer = document.querySelector('.game-container');
-		gameContainer.appendChild(explanationSection);
-	}
+        // Remove existing explanation section if it exists
+        const existingExplanation = document.getElementById('explanation-section');
+        if (existingExplanation) {
+            existingExplanation.remove();
+        }
+    
+        const puzzleData = todaysPuzzle;
+        if (!puzzleData) return;
+    
+        // Create the explanation section container...
+        const explanationSection = document.createElement('div');
+        explanationSection.id = 'explanation-section';
+        explanationSection.className = 'explanation-section';
+    
+        // Title, subtitle, etc. ...
+        const explanationTitle = document.createElement('h3');
+        explanationTitle.className = 'explanation-title';
+        explanationTitle.textContent = `Today's Solution: ${puzzleData.word}`;
+        explanationSection.appendChild(explanationTitle);
+    
+        const explanationSubtitle = document.createElement('p');
+        explanationSubtitle.className = 'explanation-subtitle';
+        explanationSubtitle.textContent = 'Here are the physics equations behind each letter:';
+        explanationSection.appendChild(explanationSubtitle);
+    
+        const explanationList = document.createElement('div');
+        explanationList.className = 'explanation-list';
+    
+        // === NEW: Find the final guess row ===
+        // If the game ended, the final guess row is currentGuess - 1
+        // (whether you won or used all guesses).
+        const finalGuessIndex = currentGuess - 1;
+        const finalGuessCells = document.querySelectorAll(`.answer-box[data-row="${finalGuessIndex}"]`);
+    
+        // Loop over each letter/equation
+        puzzleData.equations.forEach((eq, index) => {
+            // Create a container for each letter’s explanation
+            const explanationItem = document.createElement('div');
+            explanationItem.className = 'explanation-item';
+    
+            // Create the colored letter badge
+            const letterBadge = document.createElement('div');
+            letterBadge.className = 'explanation-letter';
+            letterBadge.textContent = eq.letter || puzzleData.word[index]; // Show the letter
+    
+            // === NEW: Copy color from the final guess cell ===
+            // Check if the final guess cell has .correct, .present, or .absent
+            if (finalGuessCells[index].classList.contains('correct')) {
+                letterBadge.classList.add('correct');
+            } else if (finalGuessCells[index].classList.contains('present')) {
+                letterBadge.classList.add('present');
+            } else {
+                // Default to absent
+                letterBadge.classList.add('absent');
+            }
+    
+            explanationItem.appendChild(letterBadge);
+    
+            // Create a container for the equation + explanation text
+            const equationContainer = document.createElement('div');
+            equationContainer.className = 'explanation-equation';
+    
+            // Render the LaTeX for the full equation
+            const eqSpan = document.createElement('span');
+            eqSpan.className = 'latex';
+            katex.render(eq.fullEquation, eqSpan, { throwOnError: false, displayMode: false });
+            equationContainer.appendChild(eqSpan);
+    
+            // Explanation text
+            const explanationText = document.createElement('div');
+            explanationText.className = 'explanation-text';
+            explanationText.textContent = eq.explanation;
+            equationContainer.appendChild(explanationText);
+    
+            explanationItem.appendChild(equationContainer);
+            explanationList.appendChild(explanationItem);
+        });
+    
+        explanationSection.appendChild(explanationList);
+    
+        // Finally, add the explanation section after the game board
+        const gameContainer = document.querySelector('.game-container');
+        gameContainer.appendChild(explanationSection);
+    }
+    
 
 	// Update the display of the current guess
 	function updateGuessDisplay() {
@@ -717,33 +920,83 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	// Submit the current guess and check against the answer
-	function submitGuess() {
-		const guess = guesses[currentGuess].join('');
+    function submitGuess() {
+        const guess = guesses[currentGuess].join('');
+        if (guess.length !== WORD_LENGTH) return;
+    
+        // Apply colors based on correctness
+        applyColors();
+    
+        if (guess === currentWord) {
+            // Include the final guess in the count
+            currentGuess++;
+            isGameComplete = true;
+            stopTimer();
+            updateStreakOnSolve()
+            saveGameState(); // Save state including the last guess
+            showSuccessMessage();
+        } else if (currentGuess >= MAX_GUESSES - 1) {
+            // Include the final guess before marking game complete
+            currentGuess++;
+            isGameComplete = true;
+            stopTimer();
+            saveGameState(); // Save state including the last guess
+            showFailureMessage();
+        } else {
+            // Move to next guess
+            currentGuess++;
+            currentPosition = 0;
+            highlightCurrentCell();
+            saveGameState();
+        }
+    }
 
-		// Check if guess is complete
-		if (guess.length !== WORD_LENGTH) return;
-
-		// Apply colors based on correctness
-		applyColors();
-
-		// Check if guess is correct
-		if (guess === currentWord) {
-			// Win condition
-			isGameComplete = true;
-			stopTimer();
-			showSuccessMessage();
-		} else if (currentGuess >= MAX_GUESSES - 1) {
-			// Lose condition (used all guesses)
-			isGameComplete = true;
-			stopTimer();
-			showFailureMessage();
-		} else {
-			// Move to next guess
-			currentGuess++;
-			currentPosition = 0;
-			highlightCurrentCell();
-		}
-	}
+    function updateKeyboardFromRow(guess, rowCells) {
+        // For each letter in the row, determine if it's correct/present/absent
+        for (let i = 0; i < guess.length; i++) {
+            const letter = guess[i];
+            let newStatus = '';
+    
+            if (rowCells[i].classList.contains('correct')) {
+                newStatus = 'correct';
+            } else if (rowCells[i].classList.contains('present')) {
+                newStatus = 'present';
+            } else {
+                newStatus = 'absent';
+            }
+    
+            // Check if we already had a status for this letter
+            const oldStatus = keyColorState[letter];
+    
+            // Only "upgrade" if the new status is better
+            // Priority: correct > present > absent
+            if (!oldStatus) {
+                // No status yet, just set it
+                keyColorState[letter] = newStatus;
+            } else {
+                if (oldStatus === 'correct') {
+                    // Remain correct
+                } else if (oldStatus === 'present' && newStatus === 'correct') {
+                    keyColorState[letter] = 'correct';
+                } else if (oldStatus === 'absent' && newStatus !== 'absent') {
+                    keyColorState[letter] = newStatus;
+                }
+            }
+        }
+    
+        // Now apply the final color to the keyboard keys
+        for (const letter in keyColorState) {
+            const keyEl = document.querySelector(`.key[data-key="${letter}"]`);
+            if (!keyEl) continue;
+    
+            // Remove old classes
+            keyEl.classList.remove('correct', 'present', 'absent');
+            // Add the new one
+            keyEl.classList.add(keyColorState[letter]);
+        }
+    }
+    
+    
 
 	// Apply colors to the current guess based on letter correctness
 	function applyColors() {
@@ -777,7 +1030,42 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 			}
 		}
+        updateKeyboardFromRow(guess, rowCells);
 	}
+
+    // Apply colors to a specific row (for restoring saved game)
+function applyColorsToRow(rowIndex) {
+    const guess = guesses[rowIndex];
+    const target = currentWord.split('');
+    const rowCells = document.querySelectorAll(`.answer-box[data-row="${rowIndex}"]`);
+    
+    // Map to track which letters have been matched
+    const targetLetterCount = {};
+    target.forEach(letter => {
+        targetLetterCount[letter] = (targetLetterCount[letter] || 0) + 1;
+    });
+    
+    // First pass: mark correct positions (green)
+    for (let j = 0; j < WORD_LENGTH; j++) {
+        if (guess[j] === target[j]) {
+            rowCells[j].classList.add('correct');
+            targetLetterCount[guess[j]]--;
+        }
+    }
+    
+    // Second pass: mark other positions
+    for (let j = 0; j < WORD_LENGTH; j++) {
+        if (guess[j] !== target[j]) {
+            if (targetLetterCount[guess[j]] > 0) {
+                rowCells[j].classList.add('present');
+                targetLetterCount[guess[j]]--;
+            } else {
+                rowCells[j].classList.add('absent');
+            }
+        }
+    }
+    updateKeyboardFromRow(guess, rowCells);
+}
 
 	// Show success message
 	function showSuccessMessage() {
@@ -795,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			successMessage.style.textAlign = 'center';
 			successMessage.innerHTML = `
                 <h3 style="color: var(--accent-color); margin-bottom: 10px; font-size: 1.5rem;">Congratulations!</h3>
-                <p style="color: var(--text-color);">You solved today's Physicle in ${currentGuess + 1}/${MAX_GUESSES} guesses!</p>
+                <p style="color: var(--text-color);">You solved today's Physicle in ${currentGuess}/${MAX_GUESSES} guesses!</p>
                 <p style="color: var(--text-color);">Time: ${timerElement.textContent}</p>
                 <p style="color: var(--light-text); margin-top: 8px; font-style: italic;">Close this message to see the full equations and explanations below.</p>
                 <button style="
@@ -819,7 +1107,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			});
 		}, 800);
 	}
-
 
 	// Show failure message
 	function showFailureMessage() {
@@ -882,24 +1169,36 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	// Start the game
-	function startGame() {
-		// Hide start button and show game board
-		startButton.style.display = 'none';
-		gameBoard.style.display = 'block';
+async function startGame() {
+    // Hide start button and show game board
+    startButton.style.display = 'none';
+    gameBoard.style.display = 'block';
 
-		// Reset game state
-		currentGuess = 0;
-		currentPosition = 0;
-		isGameComplete = false;
+    // Reset game state
+    currentGuess = 0;
+    currentPosition = 0;
+    isGameComplete = false;
 
-		// Initialize game
-		createAnswerGrid();
-		createEquations();
-		startTimer();
-	}
+    // Make sure the puzzle is loaded before starting
+    if (!todaysPuzzle) {
+        await updateDateDisplay();
+    }
+
+    // Initialize game
+    createAnswerGrid();
+    createEquations();
+    startTimer();
+    
+    saveGameState();
+}
 
 	// Add event listeners
-	startButton.addEventListener('click', startGame);
+	startButton.addEventListener('click', () => {
+		startGame().catch(error => {
+			console.error('Error starting game:', error);
+			alert('There was an error starting the game. Please try refreshing the page.');
+		});
+	});
 
 	// On-screen keyboard clicks
 	document.querySelectorAll('.key').forEach(key => {
@@ -935,8 +1234,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	});
 
-	// Initialize date display
-	updateDateDisplay();
+	// Initialize date display and load puzzle
+	updateDateDisplay().catch(error => {
+		console.error('Error initializing date display:', error);
+	});
 
 	// Render all LaTeX on the page and adjust sizes
 	document.querySelectorAll('.latex').forEach(element => {
@@ -969,4 +1270,78 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	});
+
+    function getStreakData() {
+        const data = localStorage.getItem('physicle_streak');
+        if (data) {
+            return JSON.parse(data);
+        } else {
+            return {
+                streak: 0,
+                bestStreak: 0,
+                lastSolvedDate: null
+            };
+        }
+    }
+    
+    function saveStreakData(streakData) {
+        localStorage.setItem('physicle_streak', JSON.stringify(streakData));
+    }
+    
+    function updateStreakOnSolve() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`;
+    
+        let streakData = getStreakData();
+    
+        if (!streakData.lastSolvedDate) {
+            // First time solving
+            streakData.streak = 1;
+            streakData.bestStreak = 1;
+        } else {
+            // Compare with last solved date
+            const last = new Date(streakData.lastSolvedDate);
+            const diff = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+    
+            if (diff === 1) {
+                // Solved 1 day after last solve => increment streak
+                streakData.streak++;
+                if (streakData.streak > streakData.bestStreak) {
+                    streakData.bestStreak = streakData.streak;
+                }
+            } else if (diff === 0) {
+                // Same day solve => do nothing (they already solved today)
+                // This shouldn't be possible in normal mode
+            } else {
+                // Missed a day or more => reset streak
+                streakData.streak = 1;
+                if (streakData.bestStreak < 1) {
+                    streakData.bestStreak = 1;
+                }
+            }
+        }
+    
+        // Update last solved date
+        streakData.lastSolvedDate = todayString;
+    
+        saveStreakData(streakData);
+    
+        updateStreakUI();
+    }
+    
+    function updateStreakUI() {
+        const streakData = getStreakData();
+        const streakDisplay = document.getElementById('streak-display');
+        if (!streakDisplay) return;
+    
+         streakDisplay.textContent = `Streak: ${streakData.streak} | Best: ${streakData.bestStreak}`;
+    }
+    
+
+    updateStreakUI();
+
 });
+
