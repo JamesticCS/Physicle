@@ -297,6 +297,21 @@ const physicsEquations = {
             latex: '\\frac{F}{a}',
             fullEquation: 'M = \\frac{F}{a}',
             explanation: "Mass equation derived from Newton's second law F = ma"
+        },
+        {
+            latex: '\\frac{v_{esc}^2 R}{2G}',
+            fullEquation: 'M = \\frac{v_{esc}^2 R}{2G}',
+            explanation: "Mass M expressed in terms of escape velocity, radius, and gravitational constant"
+        },
+        {
+            latex: '\\frac{r_s c^2}{2G}',
+            fullEquation: 'M = \\frac{r_s c^2}{2G}',
+            explanation: "Mass M expressed in terms of the Schwarzschild radius"
+        },
+        {
+            latex: '\\frac{h}{\lambda c} \\left(1 + \\frac{h}{m_e c \\lambda} (1 - \\cos \\theta) \\right)',
+            fullEquation: 'M = \\frac{h}{\lambda c} \\left(1 + \\frac{h}{m_e c \\lambda} (1 - \\cos \\theta) \\right)',
+            explanation: "Mass rearranged from the Compton scattering formula"
         }
     ],
     'N': [
@@ -455,6 +470,16 @@ const physicsEquations = {
             latex: 'm g h',
             fullEquation: 'U = m g h',
             explanation: "Gravitational potential energy near Earth's surface"
+        },
+        {
+            latex: '\\begin{bmatrix} \\gamma c \\\\ \\gamma v_x \\\\ \\gamma v_y \\\\ \\gamma v_z \\end{bmatrix}',
+            fullEquation: '\\vec{U} = \\begin{bmatrix} \\gamma c \\\\ \\gamma v_x \\\\ \\gamma v_y \\\\ \\gamma v_z \\end{bmatrix}',
+            explanation: "Four-velocity in special relativity, with gamma being the Lorentz factor"
+        },
+        {
+            latex: '-\\frac{G M m}{r}',
+            fullEquation: 'U = -\\frac{G M m}{r}',
+            explanation: "Gravitational potential energy of two masses separated by distance r"
         }
     ],
     'V': [
