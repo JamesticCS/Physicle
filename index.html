@@ -47,8 +47,8 @@
                 <li class="special-hint">
                     <strong>Tip:</strong> In this game, some mathematical numbers can represent specific letters:
                     <ul class="symbol-examples">
-                        <li><span class="math-symbol">i</span> (imaginary unit where <span class="math-symbol">i^2 = -1</span> can represent the letter "I"</li>
-                        <li><span class="math-symbol">e</span> (Euler's number, <span class="math-symbol">e \approx 2.718...</span> can represent the letter "E"</li>
+                        <li><span class="math-symbol">i</span> (imaginary unit where <span class="math-symbol">i^2 = -1</span>) can represent the letter "I"</li>
+                        <li><span class="math-symbol">e</span> (Euler's number, <span class="math-symbol">e \approx 2.718...</span>) can represent the letter "E"</li>
                         <li><span class="math-symbol">0</span> (zero) may represent the letter "O"</li>
                     </ul>
                 </li>
@@ -149,8 +149,8 @@
     <script src="script.js"></script>
     <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-    // Render all math symbols
+document.addEventListener('DOMContentLoaded', function() {
+    // First, render specific math symbols
     document.querySelectorAll('.math-symbol').forEach(element => {
         if (element.textContent) {
             try {
@@ -163,6 +163,17 @@
                 console.error('KaTeX rendering error:', e);
             }
         }
+    });
+    
+    // Then use auto-render to catch any other LaTeX in the document
+    renderMathInElement(document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false},
+            {left: "\\(", right: "\\)", display: false},
+            {left: "\\[", right: "\\]", display: true}
+        ],
+        throwOnError: false
     });
 });
 
