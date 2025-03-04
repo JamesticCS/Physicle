@@ -35,7 +35,7 @@
                         </li>
                         <li style="display: flex; align-items: center; margin-bottom: 8px;">
                             <div style="width: 20px; height: 20px; background-color: #d97706; margin-right: 8px; border-radius: 3px;"></div>
-                            Yellow: Letter is in the word but in the wrong position
+                            Orange: Letter is in the word but in the wrong position
                         </li>
                         <li style="display: flex; align-items: center;">
                             <div style="width: 20px; height: 20px; background-color: #4b5563; margin-right: 8px; border-radius: 3px;"></div>
@@ -44,6 +44,14 @@
                     </ul>
                 </li>
                 <li>Each equation is a hint for the letter directly below it in the solution word!</li>
+                <li class="special-hint">
+                    <strong>Tip:</strong> In this game, some mathematical numbers can represent specific letters:
+                    <ul class="symbol-examples">
+                        <li><span class="math-symbol">i</span> (imaginary unit where <span class="math-symbol">i^2 = -1</span>) can represent the letter "I"</li>
+                        <li><span class="math-symbol">e</span> (Euler's number, <span class="math-symbol">e \approx 2.718...</span>) can represent the letter "E"</li>
+                        <li><span class="math-symbol">0</span> (zero) may represent the letter "O"</li>
+                    </ul>
+                </li>
             </ul>
             <div class="equation-example">
                 <div class="equation-box">
@@ -56,6 +64,18 @@
                     </svg>
                 </div>
                 <div class="letter-box">E</div>
+            </div>
+            <div class="equation-example">
+                <div class="equation-box">
+                    <span class="latex">e^{i\pi} + 1</span>
+                </div>
+                <div class="arrow-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+                <div class="letter-box">O</div>
             </div>
         </div>
 
@@ -127,5 +147,26 @@
 
     <script src="physics-equation-db.js"></script>
     <script src="script.js"></script>
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Render all math symbols
+    document.querySelectorAll('.math-symbol').forEach(element => {
+        if (element.textContent) {
+            try {
+                katex.render(element.textContent.trim(), element, {
+                    throwOnError: false,
+                    displayMode: false,
+                    output: 'html'
+                });
+            } catch (e) {
+                console.error('KaTeX rendering error:', e);
+            }
+        }
+    });
+});
+
+</script>
+    </script>
 </body>
 </html>

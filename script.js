@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Game constants
 	const MAX_GUESSES = 5;
 	const WORD_LENGTH = 5;
-    const PUZZLE_VERSION = 11; // Used to regenerate puzzles
+    const PUZZLE_VERSION = 7; // Used to regenerate puzzles
 
     // Tracks the best status for each letter so far: "correct", "present", or "absent"
     const keyColorState = {};

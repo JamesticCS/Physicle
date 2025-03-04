@@ -1,6 +1,6 @@
 # Physicle
 
-Physicle is a daily physics-themed word puzzle game inspired by Wordle. Players must decode physics equations to identify corresponding letters and spell out a 5-letter physics term.
+Physicle is a daily physics-themed word puzzle game inspired by Wordle. Players must decode physics equations to identify corresponding letters and spell out a 5-letter word.
 
 ![Physicle Screenshot](images/readMeScreenshot.png)
 
