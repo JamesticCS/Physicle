@@ -433,7 +433,7 @@ const physicsEquations = {
             explanation: "Boltzmann's entropy formula (S entropy, Ω number of microstates)"
         },
         {
-            latex: '\\int \\left(\\frac{1}{2} m v^2 - mgx \\right) dt',
+            latex: '\\int_{t_1}^{t_2} \\left(\\frac{1}{2} m v^2(t) - mgx(t) \\right) dt',
             fullEquation: 'S = \\int_{t_1}^{t_2} \\left(\\frac{1}{2} m v^2(t) - mgx(t) \\right) dt',
             explanation: "Action integral in classical mechanics"
         }
