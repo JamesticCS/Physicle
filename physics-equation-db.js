@@ -31,6 +31,12 @@ const physicsEquations = {
             latex: '\\frac{v^2}{r}',
             fullEquation: 'a_c = \\frac{v^2}{r}',
             explanation: "Formula for centripetal acceleration"
+        },
+
+        {
+            latex: '\\frac{d^2x}{dt^2}',
+            fullEquation: 'a = \\frac{d^2x}{dt^2}',
+            explanation: "Second derivative of position (acceleration)"
         }
     ],
     'B': [
@@ -65,6 +71,11 @@ const physicsEquations = {
             latex: '\\kappa \\epsilon_0 \\frac{A}{d}',
             fullEquation: 'C = \\kappa \\epsilon_0 \\frac{A}{d}',
             explanation: "Capacitance of a Parallel Plate Capacitor"
+        },
+        {
+            latex: 'c = \\sqrt{a^2 + b^2}',
+            fullEquation: 'c = \\sqrt{a^2 + b^2}',
+            explanation: "Pythagorean theorem, where c represents the hypotenuse"
         }
     ],
     'D': [
@@ -114,6 +125,21 @@ const physicsEquations = {
             latex: '1.602 \\times 10^{-19}~\\text{C}',
             fullEquation: 'e = 1.602 \\times 10^{-19}~\\text{C}',
             explanation: "Elementary charge (charge of a proton/electron)"
+        },
+        {
+            latex: '\\sinh(1) + \\cosh(1)',
+            fullEquation: 'e = \\sinh(1) + \\cosh(1)',
+            explanation: "Expression is equal to e"
+        },
+        {
+            latex: '2.71828...',
+            fullEquation: 'e = 2.71828...',
+            explanation: "Approximate value of Euler's number (e)"
+        },
+        {
+            latex: '\\sqrt{p^2 c^2 + m^2 c^4}',
+            fullEquation: 'E = \\sqrt{p^2 c^2 + m^2 c^4}',
+            explanation: "Relativistic energy in terms of momentum"
         }
     ],
     'F': [
@@ -136,13 +162,19 @@ const physicsEquations = {
             latex: 'N_A c',
             fullEquation: 'F = N_A c',
             explanation: "Faraday constant, which describes how much charge there is in one mol of electrons"
+        },
+
+        {
+            latex: '\\int_{-\\infty}^{\\infty} f(t) e^{-i \\omega t} dt',
+            fullEquation: '\\mathcal{F}\\{f(t)\\} = \\int_{-\\infty}^{\\infty} f(t) e^{-i \\omega t} dt',
+            explanation: "Fourier transform of function f(t)"
         }
     ],
     'G': [
         {
-            latex: '\\frac{G M}{r^2}',
-            fullEquation: 'g = \\frac{G M}{r^2}',
-            explanation: "Gravitational field (acceleration due to gravity at distance r from mass M)"
+            latex: '\\frac{G M_e}{R_{e}^2}',
+            fullEquation: 'g = \\frac{G M_e}{R_{e}^2}',
+            explanation: "Acceleration due to gravity on earth"
         },
         {
             latex: '\\Delta H^{\\circ} - T \\Delta S^{\\circ}',
@@ -182,6 +214,11 @@ const physicsEquations = {
             latex: '\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}',
             fullEquation: 'I = \\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}',
             explanation: "Identity matrix (3 × 3), fundamental in linear algebra"
+        },
+        {
+            latex: 'e^{i\\frac{\\pi}{2}}',
+            fullEquation: 'i = e^{i\\frac{\\pi}{2}}',
+            explanation: "Complex number representation, where i is the imaginary unit"
         }
     ],
     'J': [
@@ -199,6 +236,21 @@ const physicsEquations = {
             latex: '-D \\frac{d\\phi}{dx}',
             fullEquation: 'J = -D \\frac{d\\phi}{dx}',
             explanation: "Fick's First Law of Diffusion"
+        },
+        {
+            latex: '\\frac{d^3x}{dt^3}',
+            fullEquation: 'j = \\frac{d^3x}{dt^3}',
+            explanation: "Third derivative of position (jerk)"
+        },
+        {
+            latex: '\\frac{d^2v}{dt^2}',
+            fullEquation: 'j = \\frac{d^2v}{dt^2}',
+            explanation: "First derivative of acceleration (jerk)"
+        },
+        {
+            latex: '\\text{kg m}^2/\\text{s}^2',
+            fullEquation: 'J = \\text{kg m}^2/\\text{s}^2',
+            explanation: "SI units for a Joule (unit of energy)"
         }
     ],
     'K': [
@@ -249,21 +301,46 @@ const physicsEquations = {
     ],
     'N': [
         {
-            latex: '6.022 \\times 10^{23}~\\text{mol}^{-1}',
-            fullEquation: 'N_A = 6.022 \\times 10^{23}~\\text{mol}^{-1}',
-            explanation: "Avogadro's number"
-        },
-        {
             latex: '\\text{rank}(A) + \\text{nullity}(A)',
             fullEquation: 'n = \\text{rank}(A) + \\text{nullity}(A)',
             explanation: "Rank-Nullity Theorem"
+        },
+        {
+            latex: '\\text{kg}/(\\text{m} \\cdot \\text{s}^2)',
+            fullEquation: 'N = \\text{kg}/(\\text{m} \\cdot \\text{s}^2)',
+            explanation: "SI units for Newtons (unit of force)"
         }
     ],
     'O': [
         {
-            latex: '\\omega r',
-            fullEquation: 'v = \\omega r',
-            explanation: "Orbital velocity relationship"
+            latex: 'e^{i\\pi} + 1',
+            fullEquation: '0 = e^{i\\pi} + 1',
+            explanation: "Euler's identity, where e^{i\\pi} + 1 = 0"
+        },
+        {
+            latex: '\\frac{dL}{dt} - \\frac{d}{dt}\\left(\\frac{dL}{dq}\\right)',
+            fullEquation: '0 = \\frac{dL}{dt} - \\frac{d}{dt}\\left(\\frac{dL}{dq}\\right)',
+            explanation: "Euler-Lagrange equation, representing stationary action in classical mechanics"
+        },
+        {
+            latex: '\\oint \\vec{B} \\cdot d\\vec{A}',
+            fullEquation: '0 = \\oint \\vec{B} \\cdot d\\vec{A}',
+            explanation: "Maxwell's equation (Gauss's law for magnetism in integral form), which equals zero"
+        },
+        {
+            latex: '\\gamma^\\mu \\partial_\\mu \\psi - m \\psi',
+            fullEquation: '0 = \\gamma^\\mu \\partial_\\mu \\psi - m \\psi',
+            explanation: "Dirac equation, representing relativistic quantum mechanics"
+        },
+        {
+            latex: '\\lim_{n \\to \\infty} \\frac{n!}{n^n}',
+            fullEquation: '0 = \\lim_{n \\to \\infty} \\frac{n!}{n^n}',
+            explanation: "Famous limit that is equal to 0"
+        },
+        {
+            latex: '\\lim_{x \\to 0} \\frac{\\cos(x) - 1}{x}',
+            fullEquation: '0 = \\lim_{x \\to 0} \\frac{\\cos(x) - 1}{x}',
+            explanation: "Famous trig limit that is equal to 0"
         }
     ],
     'P': [
@@ -272,11 +349,7 @@ const physicsEquations = {
             fullEquation: 'p = m v',
             explanation: "Momentum defined as mass times velocity"
         },
-        {
-            latex: 'P V',
-            fullEquation: 'P V = n R T',
-            explanation: "Ideal gas law relating pressure P, volume V, and temperature T"
-        },
+,
         {
             latex: 'I V',
             fullEquation: 'P = I V',
@@ -291,6 +364,12 @@ const physicsEquations = {
             latex: '\\tau \\omega \\cos \\theta',
             fullEquation: 'P = \\tau \\omega \\cos \\theta',
             explanation: "Rotational power equation, where torque τ and angular velocity ω contribute to power depending on angle θ"
+        },
+
+        {
+            latex: '\\vec{F} \\cdot \\vec{v}',
+            fullEquation: 'P = \\vec{F} \\cdot \\vec{v}',
+            explanation: "Formula for power, where it is equal to the dot product of force and velocity"
         }
     ],
     'Q': [

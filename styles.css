@@ -203,7 +203,7 @@ h1 {
 }
 
 .equation .katex {
-    font-size: 1.4rem; /* Default size */
+    font-size: 1.8rem; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1458,3 +1458,64 @@ footer a:hover {
     margin-left: 10px;
     vertical-align: middle;
   }
+
+/* Improved styling for the special hint about math symbols */
+.special-hint {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    position: relative;
+    border-left: 3px solid var(--primary-color);
+}
+
+/* Remove the default bullet from the guide steps list item */
+.guide-steps li.special-hint::before {
+    display: none;
+}
+
+/* Adjust the special-hint to remove the default padding-left from guide-steps */
+.guide-steps li.special-hint {
+    padding-left: 15px;
+}
+
+.special-hint strong {
+    color: var(--primary-color);
+    font-family: 'Space Mono', monospace;
+    margin-right: 5px;
+}
+
+.symbol-examples {
+    list-style-type: none;
+    margin-top: 10px;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.symbol-examples li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 20px;
+}
+
+.symbol-examples li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.math-symbol {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0 2px;
+    font-family: 'KaTeX_Math', serif;
+    color: var(--accent-color);
+}
+
+
