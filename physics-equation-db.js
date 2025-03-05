@@ -309,8 +309,8 @@ const physicsEquations = {
             explanation: "Mass M expressed in terms of the Schwarzschild radius"
         },
         {
-            latex: '\\frac{h}{\lambda c} \\left(1 + \\frac{h}{m_e c \\lambda} (1 - \\cos \\theta) \\right)',
-            fullEquation: 'M = \\frac{h}{\lambda c} \\left(1 + \\frac{h}{m_e c \\lambda} (1 - \\cos \\theta) \\right)',
+            latex: '\\frac{h}{\\lambda c} \\left(1 + \\frac{h}{m_e c \\lambda} (1 - \\cos \\theta) \\right)',
+            fullEquation: 'M = \\frac{h}{\\lambda c} \\left(1 + \\frac{h}{m_e c \\lambda} (1 - \\cos \\theta) \\right)',
             explanation: "Mass rearranged from the Compton scattering formula"
         }
     ],
