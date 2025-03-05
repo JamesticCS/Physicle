@@ -200,40 +200,50 @@ document.addEventListener('DOMContentLoaded', function() {
  * @param {Date} date - The date to use for selection
  * @returns {Object} The selected equation object
  */
-function selectEquationForLetter(letter, date, version = PUZZLE_VERSION) {
-    // Get equations available for this letter
-    const availableEquations = physicsEquations[letter];
-    
-    // If no equations are available for this letter, return a placeholder
-    if (!availableEquations || availableEquations.length === 0) {
+  function selectEquationForLetter(letter, date, version = PUZZLE_VERSION, position = 0, usedIndices = []) {
+        // Get equations available for this letter
+        const availableEquations = physicsEquations[letter];
+        
+        // If no equations are available for this letter, return a placeholder
+        if (!availableEquations || availableEquations.length === 0) {
+            return {
+                latex: '?',
+                letter: letter,
+                fullEquation: `${letter} = ?`,
+                explanation: `No equation available for letter ${letter}`
+            };
+        }
+        
+        // Create a deterministic index based on the date, letter, and position
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+        const letterCode = letter.charCodeAt(0);
+        
+        // Include position in the hash to get different equations for repeated letters
+        const dateLetterHash = (year * 10000) + (month * 100) + day + letterCode + position + version;
+        
+        // Use the hash to select an equation
+        let index = dateLetterHash % availableEquations.length;
+        
+        // If this index was already used and we have other options, pick a different one
+        if (usedIndices.includes(index) && usedIndices.length < availableEquations.length) {
+            // Simply try indices sequentially until we find an unused one
+            for (let i = 0; i < availableEquations.length; i++) {
+                if (!usedIndices.includes(i)) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        
+        // Return the selected equation with the letter property added, and remember the index
         return {
-            latex: '?',
+            ...availableEquations[index],
             letter: letter,
-            fullEquation: `${letter} = ?`,
-            explanation: `No equation available for letter ${letter}`
+            index: index  // Include the index so we can track it
         };
     }
-    
-    // Create a deterministic index based on the date and letter
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    
-    // Use letter code as an additional seed
-    const letterCode = letter.charCodeAt(0);
-    
-    // Create a hash from date and letter
-    const dateLetterHash = (year * 10000) + (month * 100) + day + letterCode + version;
-    
-    // Use the hash to select an equation
-    const index = dateLetterHash % availableEquations.length;
-    
-    // Return the selected equation with the letter property added
-    return {
-        ...availableEquations[index],
-        letter: letter
-    };
-}
 
 	/**
 	 * Generates a complete puzzle for a specific date
@@ -243,31 +253,73 @@ function selectEquationForLetter(letter, date, version = PUZZLE_VERSION) {
 	async function generatePuzzleForDate(date, version = PUZZLE_VERSION) {
         const wordList = await loadWordleAnswers();
         const word = selectWordForDate(date, wordList, version);
+        
+        // Track used equation indices for each letter
+        const usedIndices = {};
+        
         const equations = [];
         for (let i = 0; i < word.length; i++) {
             const letter = word[i];
-            const equation = selectEquationForLetter(letter, date, version);
+            
+            // Initialize tracking for this letter if needed
+            if (!usedIndices[letter]) {
+                usedIndices[letter] = [];
+            }
+            
+            // Get equation, passing the used indices to avoid duplicates
+            const equation = selectEquationForLetter(letter, date, version, i, usedIndices[letter]);
+            
+            // Remember which index was used
+            if (equation.index !== undefined) {
+                usedIndices[letter].push(equation.index);
+            }
+            
             equations.push(equation);
         }
+        
         return {
             word,
             equations
         };
     }
+    
 
     async function generateUnlimitedPuzzle() {
-        const wordList = await loadWordleAnswers(); // reuse your function
+        const wordList = await loadWordleAnswers();
         const randomIndex = Math.floor(Math.random() * wordList.length);
         const word = wordList[randomIndex].toUpperCase();
+        
+        // Track used equation indices for each letter
+        const usedIndices = {};
+        
         const equations = [];
-        // For a random effect, generate a random version for each letter.
         for (let i = 0; i < word.length; i++) {
-          const randomVersion = Math.floor(Math.random() * 1000);
-          const eq = selectEquationForLetter(word[i], new Date(), randomVersion);
-          equations.push(eq);
+            const letter = word[i];
+            
+            // Initialize tracking for this letter if needed
+            if (!usedIndices[letter]) {
+                usedIndices[letter] = [];
+            }
+            
+            // Use a random version number for variety
+            const randomVersion = Math.floor(Math.random() * 1000);
+            
+            // Get equation, passing the used indices to avoid duplicates
+            const equation = selectEquationForLetter(letter, new Date(), randomVersion, i, usedIndices[letter]);
+            
+            // Remember which index was used
+            if (equation.index !== undefined) {
+                usedIndices[letter].push(equation.index);
+            }
+            
+            equations.push(equation);
         }
-        return { word, equations };
-      }
+        
+        return { 
+            word, 
+            equations 
+        };
+    }
       
     
 
