@@ -148,35 +148,33 @@
     <script src="physics-equation-db.js"></script>
     <script src="script.js"></script>
     <script>
-
-document.addEventListener('DOMContentLoaded', function() {
-    // First, render specific math symbols
-    document.querySelectorAll('.math-symbol').forEach(element => {
-        if (element.textContent) {
-            try {
-                katex.render(element.textContent.trim(), element, {
-                    throwOnError: false,
-                    displayMode: false,
-                    output: 'html'
-                });
-            } catch (e) {
-                console.error('KaTeX rendering error:', e);
+    document.addEventListener('DOMContentLoaded', function() {
+        // First, render specific math symbols
+        document.querySelectorAll('.math-symbol').forEach(element => {
+            if (element.textContent) {
+                try {
+                    katex.render(element.textContent.trim(), element, {
+                        throwOnError: false,
+                        displayMode: false,
+                        output: 'html'
+                    });
+                } catch (e) {
+                    console.error('KaTeX rendering error:', e);
+                }
             }
-        }
+        });
+        
+        // Then use auto-render to catch any other LaTeX in the document
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ],
+            throwOnError: false
+        });
     });
-    
-    // Then use auto-render to catch any other LaTeX in the document
-    renderMathInElement(document.body, {
-        delimiters: [
-            {left: "$$", right: "$$", display: true},
-            {left: "$", right: "$", display: false},
-            {left: "\\(", right: "\\)", display: false},
-            {left: "\\[", right: "\\]", display: true}
-        ],
-        throwOnError: false
-    });
-});
-
 </script>
 </body>
 </html>
