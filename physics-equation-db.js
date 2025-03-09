@@ -1,8 +1,23 @@
 /**
  * Physics Equation Database
  * 
- * This file contains a database of physics equations for each letter of the alphabet,
- * used for automatically generating Physicle puzzles.
+ * This file contains a comprehensive database of physics equations organized by letter of the alphabet.
+ * Each letter has multiple physics equations where that letter is the variable being solved for.
+ * 
+ * Structure:
+ * - The database is organized as an object with keys A-Z
+ * - Each letter contains an array of equation objects
+ * - Each equation object has:
+ *   - latex: The LaTeX representation of the right side of the equation
+ *   - fullEquation: The complete equation including the variable
+ *   - explanation: A brief explanation of what the equation represents
+ * 
+ * This database is used to automatically generate puzzles where players must identify
+ * which letter corresponds to each displayed equation.
+ * 
+ * Example:
+ * For 'E', we have equations like E = mc² (Einstein's mass-energy equivalence)
+ * When displayed, the player sees only 'mc²' and must determine the letter 'E'.
  */
 
 const physicsEquations = {
@@ -364,7 +379,6 @@ const physicsEquations = {
             fullEquation: 'p = m v',
             explanation: "Momentum defined as mass times velocity"
         },
-,
         {
             latex: 'I V',
             fullEquation: 'P = I V',
@@ -549,14 +563,10 @@ const physicsEquations = {
     ]
 };
 
-// Export the database
+// Export the database for Node.js environments
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { physicsEquations };
 }
 
-// Export the database for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { physicsEquations };
-}
-
+// Make equations available in the browser
 window.physicsEquations = physicsEquations;

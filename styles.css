@@ -1,19 +1,26 @@
+/* ===== Colors and Theme Variables ===== */
 :root {
+    /* Primary colors */
     --primary-color: #3b82f6; /* Blue */
     --primary-dark: #2563eb;
     --accent-color: #10b981; /* Emerald */
     --accent-dark: #059669;
+    
+    /* Background and text colors */
     --bg-color: #111827; /* Dark gray/blue */
     --card-bg: #1f2937;
     --text-color: #f3f4f6;
     --light-text: #d1d5db;
     --border-color: #374151;
     --hover-color: #374151;
+    
+    /* Effects */
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
     --box-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
     --border-radius: 12px;
 }
 
+/* ===== Base Styles ===== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -33,6 +40,7 @@ body {
     line-height: 1.6;
 }
 
+/* ===== Header Styles ===== */
 h1 {
     font-family: 'Space Mono', monospace;
     font-size: 4.5rem;
@@ -53,11 +61,13 @@ h1 {
     opacity: 0.9;
 }
 
+/* ===== Layout ===== */
 .game-container {
     max-width: 600px;
     width: 100%;
 }
 
+/* ===== Card Components ===== */
 .card {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
@@ -71,6 +81,7 @@ h1 {
     box-shadow: var(--box-shadow-hover);
 }
 
+/* Game Guide Section */
 .game-guide {
     border: 2px solid var(--primary-color);
     border-radius: var(--border-radius);
@@ -109,18 +120,16 @@ h1 {
     opacity: 0.7;
 }
 
-.equation .katex-display > .katex {
-    display: flex !important;
-    justify-content: center;
-    width: 100%;
-}
-
+/* ===== KaTeX and Equation Styles ===== */
+/* Common KaTeX Display Styles */
+.equation .katex-display > .katex,
 .equation-box .katex-display > .katex {
     display: flex !important;
     justify-content: center;
     width: 100%;
 }
 
+/* Equation Example */
 .equation-example {
     display: flex;
     align-items: center;
@@ -131,6 +140,7 @@ h1 {
     border-radius: 10px;
 }
 
+/* Equation and Letter Boxes */
 .equation-box, .letter-box {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -154,6 +164,7 @@ h1 {
     text-transform: uppercase;
 }
 
+/* ===== Game Board ===== */
 .game-board {
     border-radius: var(--border-radius);
     padding: 25px;
@@ -161,6 +172,7 @@ h1 {
     box-shadow: var(--shadow);
 }
 
+/* Timer */
 .timer {
     text-align: center;
     font-size: 1.2rem;
@@ -170,6 +182,7 @@ h1 {
     font-family: 'Space Mono', monospace;
 }
 
+/* Equations Container */
 .equations {
     display: flex;
     justify-content: space-between;
@@ -177,6 +190,7 @@ h1 {
     margin-bottom: 30px;
 }
 
+/* Individual Equation */
 .equation {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -194,6 +208,7 @@ h1 {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .equation .katex-display {
@@ -215,12 +230,14 @@ h1 {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* ===== Answer Grid ===== */
 .answers {
     display: flex;
     flex-direction: column;
     gap: 5px;
     margin-bottom: 30px;
 }
+
 .guess-row {
     display: flex;
     justify-content: center;
@@ -244,14 +261,15 @@ h1 {
     font-family: 'Space Mono', monospace;
 }
 
-.answer-box.completed:hover {
-    background-color: var(--accent-color) !important;
-    border-color: var(--accent-color) !important;
-}
-
+/* Answer box states */
 .answer-box:hover {
     border-color: var(--primary-color);
     background-color: var(--hover-color);
+}
+
+.answer-box.completed:hover {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
 }
 
 .answer-box.correct {
@@ -275,17 +293,20 @@ h1 {
     transition: all 0.5s ease;
 }
 
+/* Disable hover effect for status boxes */
 .answer-box.correct:hover,
 .answer-box.present:hover,
 .answer-box.absent:hover {
     transform: none;
 }
 
+/* Active box highlighting */
 .active {
     border: 2px solid var(--primary-color);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
+/* ===== Virtual Keyboard ===== */
 .keyboard {
     display: flex;
     flex-wrap: wrap;
@@ -317,6 +338,7 @@ h1 {
     font-family: 'Space Mono', monospace;
 }
 
+/* Key states */
 .key:hover {
     background-color: var(--primary-color);
     transform: translateY(-2px);
@@ -326,6 +348,7 @@ h1 {
     transform: translateY(1px);
 }
 
+/* ===== Button Styles ===== */
 .start-button {
     background-color: var(--primary-color);
     color: white;
@@ -352,6 +375,7 @@ h1 {
     transform: translateY(1px);
 }
 
+/* ===== Date and Puzzle Number Display ===== */
 .date-display {
     text-align: center;
     margin-bottom: 5px;
@@ -368,6 +392,7 @@ h1 {
     font-family: 'Space Mono', monospace;
 }
 
+/* ===== Footer ===== */
 footer {
     margin-top: 50px;
     text-align: center;
@@ -386,7 +411,9 @@ footer a:hover {
     color: var(--accent-color);
 }
 
+/* ===== Responsive Design ===== */
 @media (max-width: 600px) {
+    /* Adjust size for medium screens */
     .equation, .answer-box {
         width: calc(33.33% - 10px);
     }
@@ -401,6 +428,7 @@ footer a:hover {
 }
 
 @media (max-width: 400px) {
+    /* Further adjustments for small screens */
     .equation, .answer-box {
         width: calc(50% - 10px);
     }
@@ -417,7 +445,8 @@ footer a:hover {
     }
 }
 
-/* Added styles for the success state and animations */
+/* ===== State Styles & Animations ===== */
+/* Success/completed state */
 .completed {
     background-color: var(--accent-color) !important;
     color: white !important;
@@ -425,6 +454,7 @@ footer a:hover {
     transition: all 0.5s ease;
 }
 
+/* Animation keyframes */
 @keyframes success-pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -440,6 +470,7 @@ footer a:hover {
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
 }
+/* GitHub Link */
 .github-link {
     margin-top: 10px;
 }
@@ -453,6 +484,7 @@ footer a:hover {
     opacity: 1;
 }
 
+/* Pop animation */
 @keyframes pop {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
@@ -1136,67 +1168,7 @@ footer a:hover {
     transition: opacity 0.3s ease;
   }
 
-  /* Style for the Play Unlimited button */
-#unlimited-button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 15px 50px;
-    font-size: 1.2rem;
-    font-weight: 500;
-    cursor: pointer;
-    margin: 30px auto;
-    display: block;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
-    font-family: 'Outfit', sans-serif;
-  }
-  
-  #unlimited-button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
-  
-  #unlimited-button:active {
-    transform: translateY(1px);
-  }
-  
-  /* Buttons in unlimited-mode end-of-game dialogs */
-  .unlimited-message-btn {
-    margin-top: 15px;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-    font-size: 1rem;
-    font-family: 'Outfit', sans-serif;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .unlimited-play-again {
-    background-color: var(--accent-color);
-    color: white;
-  }
-  
-  .unlimited-show-solutions {
-    background-color: var(--primary-color);
-    color: white;
-  }
-  
-  .unlimited-message-btn:hover {
-    transform: translateY(-2px);
-  }
-  
-  .unlimited-message-btn:active {
-    transform: translateY(1px);
-  }
-  
-
-  /* Add this to your existing CSS file */
-
-/* Styling for the Play Unlimited button on the main page */
+  /* Unlimited Mode Button Styles */
 #unlimited-button {
     background-color: var(--primary-color);
     color: white;
@@ -1211,30 +1183,60 @@ footer a:hover {
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
     font-family: 'Outfit', sans-serif;
-  }
+}
   
-  #unlimited-button:hover {
+#unlimited-button:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
+}
   
-  #unlimited-button:active {
+#unlimited-button:active {
     transform: translateY(1px);
-  }
+}
   
-  /* Styling for the unlimited mode button in the explanation section */
-  #explanation-unlimited-button {
+/* Buttons in unlimited-mode end-of-game dialogs */
+.unlimited-message-btn {
+    margin-top: 15px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    font-family: 'Outfit', sans-serif;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+  
+.unlimited-play-again {
+    background-color: var(--accent-color);
+    color: white;
+}
+  
+.unlimited-show-solutions {
+    background-color: var(--primary-color);
+    color: white;
+}
+  
+.unlimited-message-btn:hover {
+    transform: translateY(-2px);
+}
+  
+.unlimited-message-btn:active {
+    transform: translateY(1px);
+}
+  
+/* Styling for the unlimited mode button in the explanation section */
+#explanation-unlimited-button {
     background-color: var(--primary-color);
     margin-top: 20px;
     transition: all 0.3s ease;
-  }
+}
   
-  #explanation-unlimited-button:hover {
+#explanation-unlimited-button:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
+}
   
   /* Special styling for the explanation section unlimited mode container */
   .unlimited-mode-container {
@@ -1319,6 +1321,7 @@ footer a:hover {
   }
 
   /* Fix for the main "Play today's Physicle" button */
+/* Main button styles */
 #start-button {
     background-color: var(--primary-color);
     color: white;
@@ -1333,44 +1336,17 @@ footer a:hover {
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
     font-family: 'Outfit', sans-serif;
-  }
+}
   
-  #start-button:hover {
+#start-button:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
+}
   
-  #start-button:active {
+#start-button:active {
     transform: translateY(1px);
-  }
-  
-/* Fix for the main "Play today's Physicle" button */
-#start-button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 30px;
-    padding: 15px 50px;
-    font-size: 1.2rem;
-    font-weight: 500;
-    cursor: pointer;
-    margin: 30px auto;
-    display: block;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
-    font-family: 'Outfit', sans-serif;
-  }
-  
-  #start-button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-  }
-  
-  #start-button:active {
-    transform: translateY(1px);
-  }
+}
   
   /* Fix for the modals/popups */
   .success-modal, .failure-modal {

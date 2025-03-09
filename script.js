@@ -1,23 +1,25 @@
-/*
-HOW TO ADD CUSTOM DAILY PUZZLES:
-
-Puzzles are automatically generated using the physics equation database!
-However, you can still add custom puzzles for specific dates:
-
-1. Find the "customPuzzles" object below
-2. Add new puzzles using this format:
-
-"YYYY-MM-DD": {
-    word: "XXXXX",  // 5-letter word (will be the solution)
-    equations: [
-        { latex: 'your-latex-equation-1', letter: "X", fullEquation: "...", explanation: "..." },
-        { latex: 'your-latex-equation-2', letter: "X", fullEquation: "...", explanation: "..." },
-        { latex: 'your-latex-equation-3', letter: "X", fullEquation: "...", explanation: "..." },
-        { latex: 'your-latex-equation-4', letter: "X", fullEquation: "...", explanation: "..." },
-        { latex: 'your-latex-equation-5', letter: "X", fullEquation: "...", explanation: "..." }
-    ]
-}
-*/
+/**
+ * Physicle - A physics-based word puzzle game
+ * 
+ * HOW TO ADD CUSTOM DAILY PUZZLES:
+ * 
+ * Puzzles are automatically generated using the physics equation database.
+ * To add custom puzzles for specific dates:
+ * 
+ * 1. Find the "customPuzzles" object below
+ * 2. Add new puzzles using this format:
+ * 
+ * "YYYY-MM-DD": {
+ *     word: "XXXXX",  // 5-letter word (will be the solution)
+ *     equations: [
+ *         { latex: 'your-latex-equation-1', letter: "X", fullEquation: "...", explanation: "..." },
+ *         { latex: 'your-latex-equation-2', letter: "X", fullEquation: "...", explanation: "..." },
+ *         { latex: 'your-latex-equation-3', letter: "X", fullEquation: "...", explanation: "..." },
+ *         { latex: 'your-latex-equation-4', letter: "X", fullEquation: "...", explanation: "..." },
+ *         { latex: 'your-latex-equation-5', letter: "X", fullEquation: "...", explanation: "..." }
+ *     ]
+ * }
+ */
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
