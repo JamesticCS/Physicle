@@ -175,7 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
       
 
 	/**
-	 * Selects a word for a specific date using a deterministic algorithm
+	 * Selects a word for a specific date using a more reliable deterministic algorithm
+	 * that provides better randomization across the word list
 	 * @param {Date} date - The date to select a word for
 	 * @param {string[]} wordList - Array of available words
 	 * @returns {string} The selected word
@@ -187,8 +188,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		const month = date.getMonth();
 		const day = date.getDate();
 		
-		// Create a simple hash from the date
-		const dateHash = (year * 10000) + (month * 100) + day + version;
+		// Create a more sophisticated hash from the date
+		// Using prime multipliers to reduce patterns and increase distribution
+		const prime1 = 31;
+		const prime2 = 37;
+		const prime3 = 41;
+		
+		// Generate a hash with better distribution properties
+		let dateHash = (year * prime1) ^ (month * prime2) ^ (day * prime3) ^ version;
+		
+		// Ensure positive number
+		dateHash = Math.abs(dateHash);
 		
 		// Use the hash to select a word from the list
 		const index = dateHash % wordList.length;
@@ -196,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		return wordList[index].toUpperCase();
 	}
 
-	/**
+/**
  * Selects an equation for a given letter based on the date
  * @param {string} letter - The letter to find an equation for
  * @param {Date} date - The date to use for selection
@@ -1718,4 +1728,3 @@ async function startUnlimitedGame() {
     updateStreakUI();
 
 });
-
