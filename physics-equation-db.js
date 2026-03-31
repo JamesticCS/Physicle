@@ -336,8 +336,8 @@ const physicsEquations = {
             explanation: "Rank-Nullity Theorem"
         },
         {
-            latex: '\\text{kg}/(\\text{m} \\cdot \\text{s}^2)',
-            fullEquation: 'N = \\text{kg}/(\\text{m} \\cdot \\text{s}^2)',
+            latex: '\\text{kg} \\cdot \\text{m} / \\text{s}^2',
+            fullEquation: 'N = \\text{kg} \\cdot \\text{m} / \\text{s}^2',
             explanation: "SI units for Newtons (unit of force)"
         }
     ],
